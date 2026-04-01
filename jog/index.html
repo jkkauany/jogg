@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤖 Robô Codificador PRO</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- EDITOR -->
+    <div class="editor">
+      <div class="editor-header">
+        <span>📝 Seu código — Nível 1</span>
+        <span style="color:#ffd93d; cursor:pointer;" onclick="mostrarDica()">💡 Dica</span>
+      </div>
+      <pre class="code-area" id="code" contenteditable="true" spellcheck="false">moverEsquerda()
+moverEsquerda()
+moverCima()
+moverCima()</pre>
+      
+      <div class="controls">
+        <button onclick="executarCodigo()" class="btn-exec">▶️ Executar</button>
+        <button onclick="mostrarSolucao()" class="btn-solucao">Solução</button>
+        <button onclick="mostrarDocs()" class="btn-docs">📖 Docs</button>
+        <button onclick="resetNivel()" class="btn-reset">🔄 Reset</button>
+      </div>
+      
+      <div id="status" class="status"></div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="grid-container">
+      <canvas id="canvas" width="560" height="560"></canvas>
+    </div>
+  </div>
+
+  <!-- MODAL DOCUMENTAÇÃO -->
+  <div id="modal-docs">
+    <div class="modal-content">
+      <h2>📖 Comandos Disponíveis</h2>
+      <ul>
+        <li><strong>moverEsquerda()</strong> — Move o robô 1 casa para a esquerda</li>
+        <li><strong>moverDireita()</strong> — Move o robô 1 casa para a direita</li>
+        <li><strong>moverCima()</strong> — Move o robô 1 casa para cima</li>
+        <li><strong>moverBaixo()</strong> — Move o robô 1 casa para baixo</li>
+      </ul>
+      <p style="font-size:14px; color:#64748b; margin-bottom:24px;">
+        Escreva um comando por linha no editor.<br>
+        O robô só entende esses 4 comandos por enquanto.
+      </p>
+      <button onclick="fecharModal()" class="btn-fechar">Fechar</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
