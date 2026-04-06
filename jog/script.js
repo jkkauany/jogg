@@ -41,6 +41,7 @@ const niveis = [
 // ========= CARREGAR =========
 function carregarNivel(n) {
   const nivel = niveis[n-1];
+  if (!nivel) return;
 
   maze = nivel.maze.map(l => [...l]);
   itens = nivel.itens.map(i => ({...i, coletado:false}));
@@ -61,7 +62,6 @@ function carregarNivel(n) {
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // paredes
   ctx.fillStyle = '#475569';
   for (let y=0;y<ROWS;y++){
     for (let x=0;x<COLS;x++){
@@ -71,7 +71,6 @@ function draw() {
     }
   }
 
-  // grade
   ctx.strokeStyle='#d1d5db';
   for (let i=0;i<=COLS;i++){
     ctx.beginPath();
@@ -86,7 +85,6 @@ function draw() {
     ctx.stroke();
   }
 
-  // itens
   itens.forEach(item=>{
     if(item.coletado) return;
 
@@ -96,19 +94,17 @@ function draw() {
     ctx.save();
     ctx.translate(px,py);
 
+    ctx.font='40px Arial';
     if(item.tipo==="real"){
-      ctx.font='40px Arial';
       ctx.fillText('⭐',0,0);
     } else {
       ctx.fillStyle='red';
-      ctx.font='40px Arial';
       ctx.fillText('✕',0,0);
     }
 
     ctx.restore();
   });
 
-  // robô
   ctx.beginPath();
   ctx.arc(robotPixel.x, robotPixel.y, 20, 0, Math.PI*2);
   ctx.fillStyle = '#22c55e';
@@ -119,6 +115,8 @@ function draw() {
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
 async function moveTo(nx, ny) {
+  // limite do mapa
+  if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) return;
   if (jogoTerminado || maze[ny][nx] === 1) return;
 
   const tx = nx*CELL + CELL/2;
@@ -169,20 +167,21 @@ function checarItens() {
 
 // ========= COMANDOS =========
 const commands = {
-  moverDireita: ()=> moveTo(robot.gridX+1, robot.gridY),
-  moverEsquerda: ()=> moveTo(robot.gridX-1, robot.gridY),
-  moverCima: ()=> moveTo(robot.gridX, robot.gridY-1),
-  moverBaixo: ()=> moveTo(robot.gridX, robot.gridY+1)
+  'moverDireita()': () => moveTo(robot.gridX+1, robot.gridY),
+  'moverEsquerda()': () => moveTo(robot.gridX-1, robot.gridY),
+  'moverCima()': () => moveTo(robot.gridX, robot.gridY-1),
+  'moverBaixo()': () => moveTo(robot.gridX, robot.gridY+1)
 };
 
 // ========= EXECUÇÃO =========
 async function executarCodigo() {
-  if (isRunning) return;
+  if (isRunning || jogoTerminado) return;
 
   isRunning = true;
+  document.getElementById('status').innerHTML = '🚀 Executando...';
 
   const linhas = document
-    .getElementById('codigo')
+    .getElementById('code')
     .innerText.trim().split('\n');
 
   for (let linha of linhas) {
@@ -202,8 +201,14 @@ async function executarCodigo() {
   isRunning = false;
 }
 
-// ========= RESET =========
+// ========= CONTROLE =========
 function resetNivel() {
+  carregarNivel(nivelAtual);
+  draw();
+}
+
+function proximoNivel() {
+  nivelAtual++;
   carregarNivel(nivelAtual);
   draw();
 }
