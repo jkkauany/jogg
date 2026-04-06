@@ -221,4 +221,44 @@ function checarItens() {
       return;
     }
   }
+
+  isRunning = false;
+  if (!cards.every(c => c.collected)) {
+    document.getElementById('status').innerHTML = '✅ Código executado com sucesso!';
+  }
 }
+
+function mostrarDica() {
+  alert('💡 Dica: Comece indo para a esquerda e depois suba para pegar a primeira carta em (2,2)!');
+}
+
+function resetNivel() {
+  robot = { gridX: 4, gridY: 5 };
+  robotPixel = { x: 4*CELL + CELL/2, y: 5*CELL + CELL/2 };
+  
+  cards = [
+    { x: 2, y: 2, collected: false },
+    { x: 5, y: 1, collected: false },
+    { x: 7, y: 6, collected: false },
+    { x: 3, y: 7, collected: false }
+  ];
+  
+  document.getElementById('code').innerText = 'moverEsquerda()\nmoverEsquerda()\nmoverCima()\nmoverCima()';
+  document.getElementById('status').innerHTML = '🔄 Nível reiniciado!';
+  draw();
+}
+
+function mostrartutorial() {
+  document.getElementById('modal-tutorial').style.display = 'flex';
+}
+
+function fecharModal() {
+  document.getElementById('modal-tutorial').style.display = 'none';
+}
+
+// Iniciar o jogo
+draw();
+setInterval(() => { 
+  if (!isRunning) draw(); 
+}, 80);
+
