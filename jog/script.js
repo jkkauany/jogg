@@ -14,7 +14,7 @@ let robotPixel = { x: 0, y: 0 };
 let maze = [];
 let itens = [];
 
-// ========= NÍVEIS =========
+// ========= NÍVEL =========
 const niveis = [
   {
     nome: "Nível 1",
@@ -46,9 +46,7 @@ function carregarNivel(n) {
   robot.gridX = nivel.robotStart.x;
   robot.gridY = nivel.robotStart.y;
 
-  robotPixel.x = robot.gridX * CELL + CELL/2;
-  robotPixel.y = robot.gridY * CELL + CELL/2;
-
+  atualizarPixel();
   document.getElementById('status').innerHTML = nivel.nome;
 }
 
@@ -56,6 +54,7 @@ function carregarNivel(n) {
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
+  // paredes
   for (let y=0;y<ROWS;y++){
     for (let x=0;x<COLS;x++){
       if (maze[y][x]===1){
@@ -65,32 +64,42 @@ function draw() {
     }
   }
 
+  // itens
   itens.forEach(item=>{
     if(item.coletado) return;
     ctx.font="30px Arial";
     ctx.fillText(item.tipo==="real"?"⭐":"✕", item.x*CELL+20, item.y*CELL+40);
   });
 
+  // robô (simples)
   ctx.fillStyle="blue";
   ctx.beginPath();
   ctx.arc(robotPixel.x, robotPixel.y, 15, 0, Math.PI*2);
   ctx.fill();
 }
 
+// ========= AUX =========
+function atualizarPixel(){
+  robotPixel.x = robot.gridX * CELL + CELL/2;
+  robotPixel.y = robot.gridY * CELL + CELL/2;
+}
+
 // ========= MOVIMENTO =========
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
 async function moveTo(x,y){
-  if(maze[y][x]===1) return;
+
+  // 🚨 validação completa
+  if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
+  if (maze[y][x] === 1) return;
 
   robot.gridX = x;
   robot.gridY = y;
 
-  robotPixel.x = x*CELL + CELL/2;
-  robotPixel.y = y*CELL + CELL/2;
-
+  atualizarPixel();
   checarItens();
   draw();
+
   await sleep(200);
 }
 
@@ -111,15 +120,19 @@ async function executarCodigo(){
 
   for(let linha of codigo){
     const cmd = linha.trim();
+
+    if(cmd === "") continue;
+
     if(commands[cmd]){
       await commands[cmd]();
     } else {
-      document.getElementById('status').innerHTML = "❌ Comando inválido";
+      document.getElementById('status').innerHTML = "❌ Comando inválido: " + cmd;
       isRunning = false;
       return;
     }
   }
 
+  document.getElementById('status').innerHTML = "✅ Código executado";
   isRunning = false;
 }
 
@@ -132,7 +145,7 @@ function checarItens(){
       if(item.tipo==="real"){
         document.getElementById('status').innerHTML="🎉 Você venceu!";
       } else {
-        document.getElementById('status').innerHTML="❌ Pegou errado!";
+        document.getElementById('status').innerHTML="❌ Item errado!";
         setTimeout(resetNivelAtual,1000);
       }
     }
@@ -153,6 +166,6 @@ function fecharModal(){
   document.getElementById('modal-tutorial').style.display='none';
 }
 
-// START
+// ========= START =========
 carregarNivel(1);
 draw();
