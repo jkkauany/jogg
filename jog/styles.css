@@ -183,3 +183,17 @@ button {
 .btn-fechar:hover {
   background:#00a080;
 }
+
+.btn-fechar {
+  width:100%; 
+  padding:14px; 
+  background:#00b894; 
+  color:white; 
+  border:none; 
+  border-radius:12px; 
+  font-size:16px; 
+  cursor:pointer;
+}
+.btn-fechar:hover {
+  background:#00a080;
+}
