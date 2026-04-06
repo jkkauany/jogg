@@ -291,12 +291,12 @@ function resetNivel() {
   draw();
 }
 
-function mostrarDocs() {
-  document.getElementById('modal-docs').style.display = 'flex';
+function mostrartutorial() {
+  document.getElementById('modal-tutorial').style.display = 'flex';
 }
 
 function fecharModal() {
-  document.getElementById('modal-docs').style.display = 'none';
+  document.getElementById('modal-tutorial').style.display = 'none';
 }
 
 // Iniciar o jogo

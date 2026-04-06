@@ -111,8 +111,8 @@ button {
 .btn-solucao { background:var(--accent); color:white; }
 .btn-solucao:hover { background:#4f52d9; transform:scale(1.05); }
 
-.btn-docs { background:#64748b; color:white; }
-.btn-docs:hover { background:#475569; transform:scale(1.05); }
+.btn-tutorial { background:#64748b; color:white; }
+.btn-tutorial:hover { background:#475569; transform:scale(1.05); }
 
 .btn-reset { background:#f59e0b; color:white; }
 .btn-reset:hover { background:#d97706; transform:scale(1.05); }
@@ -127,7 +127,7 @@ button {
 }
 
 /* MODAL */
-#modal-docs {
+#modal-tutorial {
   display: none;
   position: fixed;
   top: 0; left: 0;
@@ -183,4 +183,8 @@ button {
 .btn-fechar:hover {
   background:#00a080;
 }
+
+
+
+
 
