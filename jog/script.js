@@ -255,26 +255,6 @@ function mostrarDica() {
   alert('💡 Dica: Comece indo para a esquerda e depois suba para pegar a primeira carta em (2,2)!');
 }
 
-function mostrarSolucao() {
-  const solucao = `moverEsquerda()
-moverEsquerda()
-moverCima()
-moverCima()
-moverDireita()
-moverDireita()
-moverBaixo()
-moverBaixo()
-moverEsquerda()
-moverCima()
-moverDireita()
-moverDireita()
-moverBaixo()
-moverBaixo()
-moverEsquerda()`;
-  document.getElementById('code').innerText = solucao;
-  document.getElementById('status').innerHTML = '📋 Solução carregada!';
-}
-
 function resetNivel() {
   robot = { gridX: 4, gridY: 5 };
   robotPixel = { x: 4*CELL + CELL/2, y: 5*CELL + CELL/2 };
