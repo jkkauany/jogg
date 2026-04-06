@@ -2,63 +2,52 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🤖 Robô Codificador PRO</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <!-- EDITOR -->
-    <div class="editor">
-  <div class="editor-header">
-    <span>📝 Seu código — Nível 1</span>
-    <span style="color:#ffd93d; cursor:pointer;" onclick="mostrarDica()">💡 Dica</span>
-  </div>
 
-  <!-- AQUI SIM -->
-  <textarea 
-    id="codigo" 
-    placeholder="Digite seus comandos aqui..."
-    class="codigo-area"
-  ></textarea>
-        <span>📝 Seu código — Nível 1</span>
-        <span style="color:#ffd93d; cursor:pointer;" onclick="mostrarDica()">💡 Dica</span>
-      </div>
+<div class="container">
+  <div class="editor">
 
-      
-      <div class="controls">
-        <button onclick="executarCodigo()" class="btn-exec">▶️ Executar</button>
-        <button onclick="mostrarDocs()" class="btn-docs">📖 Tutorial</button>
-        <button onclick="resetNivel()" class="btn-reset">🔄 Reset</button>
-      </div>
-      
-      <div id="status" class="status"></div>
+    <div class="editor-header">
+      <span>📝 Seu código — Nível 1</span>
+      <span style="color:#ffd93d; cursor:pointer;" onclick="mostrartutorial()">💡 Tutorial</span>
     </div>
 
-    <!-- CANVAS -->
-    <div class="grid-container">
-      <canvas id="canvas" width="560" height="560"></canvas>
+    <textarea 
+      id="codigo" 
+      placeholder="Digite seus comandos..."
+      class="codigo-area"
+    ></textarea>
+
+    <div class="controls">
+      <button onclick="executarCodigo()" class="btn-exec">▶️ Executar</button>
+      <button onclick="mostrartutorial()" class="btn-tutorial">📖 Tutorial</button>
+      <button onclick="resetNivelAtual()" class="btn-reset">🔄 Reset</button>
     </div>
+
+    <div id="status" class="status"></div>
   </div>
 
-  <!-- MODAL DOCUMENTAÇÃO -->
-  <div id="modal-tutorial">
-    <div class="modal-content">
-      <h2>📖 Comandos Disponíveis</h2>
-      <ul>
-        <li><strong>moverEsquerda()</strong> — Move o robô 1 casa para a esquerda</li>
-        <li><strong>moverDireita()</strong> — Move o robô 1 casa para a direita</li>
-        <li><strong>moverCima()</strong> — Move o robô 1 casa para cima</li>
-        <li><strong>moverBaixo()</strong> — Move o robô 1 casa para baixo</li>
-      </ul>
-      <p style="font-size:14px; color:#64748b; margin-bottom:24px;">
-        Escreva um comando por linha no editor.<br>
-        O robô só entende esses 4 comandos por enquanto.
-      </p>
-      <button onclick="fecharModal()" class="btn-fechar">Fechar</button>
-    </div>
+  <div class="grid-container">
+    <canvas id="canvas" width="560" height="560"></canvas>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<div id="modal-tutorial">
+  <div class="modal-content">
+    <h2>📖 Comandos</h2>
+    <ul>
+      <li><strong>moverEsquerda()</strong></li>
+      <li><strong>moverDireita()</strong></li>
+      <li><strong>moverCima()</strong></li>
+      <li><strong>moverBaixo()</strong></li>
+    </ul>
+    <button onclick="fecharModal()" class="btn-fechar">Fechar</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
