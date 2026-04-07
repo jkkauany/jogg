@@ -1,4 +1,4 @@
-// =============== CONFIGURAÇÃO ===============
+// =============== CONFIGURAÇÃO =============== //
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const CELL = 70;
@@ -10,6 +10,51 @@ let robotPixel = { x: 0, y: 0 };
 let chips = [];
 let isRunning = false;
 
+// ==================== [MODIFICAÇÃO 1] SALVAR PROGRESSO ==================== //
+let completedLevels = [];
+
+function loadProgress() {
+  const saved = localStorage.getItem('robotCodificadorProgress');
+  if (saved) {
+    completedLevels = JSON.parse(saved);
+  } else {
+    completedLevels = [];
+  }
+}
+
+function saveProgress(levelNumber) {
+  if (!completedLevels.includes(levelNumber)) {
+    completedLevels.push(levelNumber);
+    completedLevels.sort((a, b) => a - b);
+    localStorage.setItem('robotCodificadorProgress', JSON.stringify(completedLevels));
+  }
+  updateProgressBar(); // ← Correção: atualiza a barra visualmente
+}
+
+function resetProgress() {
+  if (confirm('🗑️ Deseja apagar TODO o progresso e começar do zero?')) {
+    localStorage.removeItem('robotCodificadorProgress');
+    completedLevels = [];
+    updateProgressBar();
+    loadLevel(0);
+    alert('✅ Progresso resetado! O jogo voltou ao início.');
+  }
+}
+
+// ==================== FUNÇÃO DA BARRA DE PROGRESSO ==================== //
+function updateProgressBar() {
+  const bar = document.getElementById('progress-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.createElement('div');
+    dot.className = `level-dot ${completedLevels.includes(i) ? 'completed' : ''}`;
+    dot.textContent = i;
+    bar.appendChild(dot);
+  }
+}
+
+// =============== NÍVEIS =============== //
 const levels = [
   {
     number: 1,
@@ -56,25 +101,29 @@ moverEsquerda()`
     title: "Nível 3 — Labirinto simples",
     startX: 7,
     startY: 0,
-    chips: [
-      { x: 0, y: 0 },
-      { x: 2, y: 4 },
-      { x: 5, y: 2 },
-      { x: 4, y: 7 },
-      { x: 1, y: 6 }
-    ],
-    solution: `moverEsquerda()\nmoverEsquerda()\nmoverEsquerda()\nmoverBaixo()\nmoverBaixo()\nmoverEsquerda()`
+    chips: [{ x: 0, y: 0 }, 
+      { x: 2, y: 4 }, 
+      { x: 5, y: 2 }, 
+      { x: 4, y: 7 }, 
+      { x: 1, y: 6 }],
+    solution: `moverEsquerda()
+moverEsquerda()
+moverEsquerda()
+moverBaixo()
+moverBaixo()
+moverEsquerda()`
   },
   {
     number: 4,
     title: "Nível 4 — Desafio Final!",
     startX: 3,
     startY: 3,
-    chips: [
-      { x: 0, y: 0 }, { x: 7, y: 0 },
-      { x: 0, y: 7 }, { x: 7, y: 7 },
-      { x: 2, y: 5 }, { x: 5, y: 1 }
-    ],
+    chips: [{ x: 0, y: 0 }, 
+      { x: 7, y: 0 }, 
+      { x: 0, y: 7 }, 
+      { x: 7, y: 7 }, 
+      { x: 2, y: 5 }, 
+      { x: 5, y: 1 }],
     solution: ``
   }
 ];
@@ -246,6 +295,36 @@ async function moveTo(newGridX, newGridY) {
   }
 }
 
+// ==================== [MODIFICAÇÃO 2] EXECUTAR + LIMPA EDITOR ==================== //
+async function executarCodigo() {
+  if (isRunning) return;
+
+  isRunning = true;
+  document.getElementById('status').innerHTML = '🚀 Executando código...';
+  document.getElementById('btn-proximo').style.display = 'none';
+
+  const lines = document.getElementById('code').innerText.trim().split('\n');
+
+  for (let line of lines) {
+    const cmd = line.trim();
+    if (cmd === '') continue;
+    if (commands[cmd]) {
+      await commands[cmd]();
+    } else {
+      document.getElementById('status').innerHTML = `❌ Comando desconhecido: <b>${cmd}</b>`;
+      isRunning = false;
+      return;
+    }
+  }
+
+  isRunning = false;
+  document.getElementById('code').innerText = '';
+
+  if (!chips.every(c => c.collected)) {
+    document.getElementById('status').innerHTML = '✅ Código executado com sucesso! (Robô continua no lugar)';
+  }
+}
+
 // Comandos (igual)
 const commands = {
   'moverEsquerda()': () => moveTo(Math.max(0, robot.gridX - 1), robot.gridY),
@@ -331,8 +410,20 @@ function fecharModal() {
   document.getElementById('modal-docs').style.display = 'none';
 }
 
-// Iniciar o jogo
-loadLevel(0);
+// ==================== INICIAR O JOGO ==================== //
+loadProgress();
+const maxCompleted = completedLevels.length ? Math.max(...completedLevels) : 0;
+const startIndex = Math.min(maxCompleted, levels.length - 1);
+loadLevel(startIndex);
+
 setInterval(() => {
   if (!isRunning) draw();
 }, 80);
+
+// Atalho Ctrl + Enter para executar
+document.getElementById('code').addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    executarCodigo();
+  }
+});
