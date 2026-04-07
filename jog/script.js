@@ -362,13 +362,24 @@ function loadLevel(index) {
   currentLevelIndex = index;
   const level = levels[index];
 
+  // Configura posição do robô
   robot = { gridX: level.startX, gridY: level.startY };
-  robotPixel = { x: level.startX * CELL + CELL/2, y: level.startY * CELL + CELL/2 };
+  robotPixel = { 
+    x: level.startX * CELL + CELL/2, 
+    y: level.startY * CELL + CELL/2 
+  };
 
+  // Reset dos chips
   chips = level.chips.map(chip => ({ ...chip, collected: false }));
 
+  // Atualiza título
   document.getElementById('level-title').innerText = level.title;
-  document.getElementById('code').innerText = level.solution || 'Escreva seu código aqui...';
+
+  // ==================== MUDANÇA AQUI ====================
+  // Editor começa sempre vazio
+  document.getElementById('code').innerText = '';
+
+  // Limpa status e botão próximo
   document.getElementById('status').innerHTML = '';
   document.getElementById('btn-proximo').style.display = 'none';
 
