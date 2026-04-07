@@ -10,7 +10,7 @@ let robotPixel = { x: 0, y: 0 };
 let chips = [];
 let isRunning = false;
 
-// ==================== [MODIFICAÇÃO 1] SALVAR PROGRESSO ==================== //
+// ==================== PROGRESSO ==================== //
 let completedLevels = [];
 
 function loadProgress() {
@@ -28,7 +28,7 @@ function saveProgress(levelNumber) {
     completedLevels.sort((a, b) => a - b);
     localStorage.setItem('robotCodificadorProgress', JSON.stringify(completedLevels));
   }
-  updateProgressBar(); // ← Correção: atualiza a barra visualmente
+  updateProgressBar();
 }
 
 function resetProgress() {
@@ -41,7 +41,6 @@ function resetProgress() {
   }
 }
 
-// ==================== FUNÇÃO DA BARRA DE PROGRESSO ==================== //
 function updateProgressBar() {
   const bar = document.getElementById('progress-bar');
   if (!bar) return;
@@ -94,18 +93,29 @@ moverEsquerda()`
       { x: 7, y: 1 },
       { x: 3, y: 3 }
     ],
-    solution: `moverDireita()\nmoverDireita()\nmoverDireita()\nmoverDireita()\nmoverDireita()\nmoverDireita()\nmoverDireita()\nmoverCima()\nmoverCima()\nmoverCima()`
+    solution: `moverDireita()
+moverDireita()
+moverDireita()
+moverDireita()
+moverDireita()
+moverDireita()
+moverDireita()
+moverCima()
+moverCima()
+moverCima()`
   },
   {
     number: 3,
     title: "Nível 3 — Labirinto simples",
     startX: 7,
     startY: 0,
-    chips: [{ x: 0, y: 0 }, 
-      { x: 2, y: 4 }, 
-      { x: 5, y: 2 }, 
-      { x: 4, y: 7 }, 
-      { x: 1, y: 6 }],
+    chips: [
+      { x: 0, y: 0 },
+      { x: 2, y: 4 },
+      { x: 5, y: 2 },
+      { x: 4, y: 7 },
+      { x: 1, y: 6 }
+    ],
     solution: `moverEsquerda()
 moverEsquerda()
 moverEsquerda()
@@ -118,12 +128,14 @@ moverEsquerda()`
     title: "Nível 4 — Desafio Final!",
     startX: 3,
     startY: 3,
-    chips: [{ x: 0, y: 0 }, 
-      { x: 7, y: 0 }, 
-      { x: 0, y: 7 }, 
-      { x: 7, y: 7 }, 
-      { x: 2, y: 5 }, 
-      { x: 5, y: 1 }],
+    chips: [
+      { x: 0, y: 0 },
+      { x: 7, y: 0 },
+      { x: 0, y: 7 },
+      { x: 7, y: 7 },
+      { x: 2, y: 5 },
+      { x: 5, y: 1 }
+    ],
     solution: ``
   }
 ];
@@ -143,7 +155,6 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// Desenha o ROBÔ (mesmo código anterior)
 function drawRobot(px, py) {
   ctx.save();
   ctx.translate(px, py);
@@ -194,9 +205,8 @@ function drawRobot(px, py) {
   ctx.restore();
 }
 
-// Desenha chipe (some quando collected = true)
 function drawChip(x, y, index, time) {
-  if (chips[index].collected) return;   // ← CHIPE SOME AQUI
+  if (chips[index].collected) return;
   const px = x * CELL + CELL/2;
   const py = y * CELL + CELL/2 + Math.sin(time * 3 + index) * 8;
   const rot = Math.sin(time * 2.5 + index * 1.3) * 7;
@@ -220,7 +230,6 @@ function drawChip(x, y, index, time) {
   ctx.restore();
 }
 
-// Desenho completo
 function draw() {
   const time = Date.now() / 1000;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -250,11 +259,9 @@ function draw() {
   drawRobot(robotPixel.x, robotPixel.y);
 }
 
-// Movimento suave
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function moveTo(newGridX, newGridY) {
-  // ... (código de movimento igual ao anterior - não mudou)
   const startX = robotPixel.x;
   const startY = robotPixel.y;
   const targetX = newGridX * CELL + CELL/2;
@@ -295,37 +302,47 @@ async function moveTo(newGridX, newGridY) {
   }
 }
 
-// ==================== [MODIFICAÇÃO 2] EXECUTAR + LIMPA EDITOR ==================== //
+// ==================== EXECUTAR CÓDIGO (VERSÃO CORRIGIDA) ==================== //
 async function executarCodigo() {
   if (isRunning) return;
 
   isRunning = true;
-  document.getElementById('status').innerHTML = '🚀 Executando código...';
+  const status = document.getElementById('status');
+  const codeArea = document.getElementById('code');
+
+  status.innerHTML = '🚀 Executando código...';
   document.getElementById('btn-proximo').style.display = 'none';
 
-  const lines = document.getElementById('code').innerText.trim().split('\n');
+  const lines = codeArea.innerText.trim().split('\n');
 
   for (let line of lines) {
     const cmd = line.trim();
     if (cmd === '') continue;
+
     if (commands[cmd]) {
       await commands[cmd]();
     } else {
-      document.getElementById('status').innerHTML = `❌ Comando desconhecido: <b>${cmd}</b>`;
+      status.innerHTML = `❌ Comando desconhecido: <b>${cmd}</b>`;
       isRunning = false;
       return;
     }
   }
 
   isRunning = false;
-  document.getElementById('code').innerText = '';
 
-  if (!chips.every(c => c.collected)) {
-    document.getElementById('status').innerHTML = '✅ Código executado com sucesso! (Robô continua no lugar)';
+  // Limpa o editor automaticamente após executar
+  codeArea.innerHTML = '';
+
+  // Verifica se completou o nível
+  if (chips.every(c => c.collected)) {
+    status.innerHTML = `🎉 Nível ${levels[currentLevelIndex].number} concluído!`;
+    document.getElementById('btn-proximo').style.display = 'flex';
+    saveProgress(levels[currentLevelIndex].number);
+  } else {
+    status.innerHTML = '✅ Código executado! Editor limpo.';
   }
 }
 
-// Comandos (igual)
 const commands = {
   'moverEsquerda()': () => moveTo(Math.max(0, robot.gridX - 1), robot.gridY),
   'moverDireita()': () => moveTo(Math.min(COLS-1, robot.gridX + 1), robot.gridY),
@@ -333,53 +350,23 @@ const commands = {
   'moverBaixo()': () => moveTo(robot.gridX, Math.min(ROWS-1, robot.gridY + 1))
 };
 
-async function executarCodigo() {
-  if (isRunning) return;
-  isRunning = true;
-  document.getElementById('status').innerHTML = '🚀 Executando código...';
-  document.getElementById('btn-proximo').style.display = 'none';
-
-  const lines = document.getElementById('code').innerText.trim().split('\n');
-
-  for (let line of lines) {
-    const cmd = line.trim();
-    if (cmd === '') continue;
-    if (commands[cmd]) {
-      await commands[cmd]();
-    } else {
-      document.getElementById('status').innerHTML = `❌ Comando desconhecido: <b>${cmd}</b>`;
-      isRunning = false;
-      return;
-    }
-  }
-  isRunning = false;
-  if (!chips.every(c => c.collected)) {
-    document.getElementById('status').innerHTML = '✅ Código executado com sucesso!';
-  }
-}
-
 function loadLevel(index) {
   currentLevelIndex = index;
   const level = levels[index];
 
-  // Configura posição do robô
   robot = { gridX: level.startX, gridY: level.startY };
   robotPixel = { 
     x: level.startX * CELL + CELL/2, 
     y: level.startY * CELL + CELL/2 
   };
 
-  // Reset dos chips
   chips = level.chips.map(chip => ({ ...chip, collected: false }));
 
-  // Atualiza título
   document.getElementById('level-title').innerText = level.title;
-
-  // ==================== MUDANÇA AQUI ====================
-  // Editor começa sempre vazio
-  document.getElementById('code').innerText = '';
-
-  // Limpa status e botão próximo
+  
+  // Editor sempre começa vazio
+  document.getElementById('code').innerHTML = '';
+  
   document.getElementById('status').innerHTML = '';
   document.getElementById('btn-proximo').style.display = 'none';
 
@@ -401,11 +388,11 @@ function mostrarDica() {
 
 function mostrarSolucao() {
   const level = levels[currentLevelIndex];
-  if (level.solution) {
+  if (level.solution && level.solution.trim() !== '') {
     document.getElementById('code').innerText = level.solution;
     document.getElementById('status').innerHTML = '📋 Solução carregada!';
   } else {
-    alert('🤖 Neste nível a solução não foi fornecida. Tente resolver sozinho!');
+    alert('🤖 Neste nível a solução ainda não foi fornecida.');
   }
 }
 
@@ -431,7 +418,7 @@ setInterval(() => {
   if (!isRunning) draw();
 }, 80);
 
-// Atalho Ctrl + Enter para executar
+// Atalho Ctrl + Enter
 document.getElementById('code').addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.key === 'Enter') {
     e.preventDefault();
