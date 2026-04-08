@@ -36,7 +36,7 @@ body {
   padding: 25px; 
   border-radius: 24px; 
   box-shadow: 0 20px 50px rgba(0,0,0,0.18); 
-  max-width: 1100px; 
+  max-width: 1180px; 
   width: 100%;
   align-items: stretch;
 }
@@ -65,7 +65,7 @@ body {
   border-bottom: 1px solid #3a3a4a;
 }
 
-/* ÁREA DE CÓDIGO */
+/* ÁREA DE CÓDIGO - MAIOR */
 .code-area { 
   flex: 1;
   background: var(--dark); 
@@ -81,7 +81,7 @@ body {
   min-height: 320px;
 }
 
-/* CONTROLES */
+/* CONTROLES - AGORA ABAIXO DO EDITOR */
 .controls { 
   padding: 16px 20px; 
   display: flex; 
@@ -112,13 +112,22 @@ button:hover {
 }
 
 /* BOTÕES */
-.btn-exec { background: var(--primary); color: white; }
+.btn-exec { 
+  background: var(--primary); 
+  color: white; 
+}
 .btn-exec:hover { background: var(--primary-hover); }
 
-.btn-solucao { background: var(--accent); color: white; }
+.btn-solucao { 
+  background: var(--accent); 
+  color: white; 
+}
 .btn-solucao:hover { background: var(--accent-hover); }
 
-.btn-reset { background: var(--warning); color: white; }
+.btn-reset { 
+  background: var(--warning); 
+  color: white; 
+}
 .btn-reset:hover { background: var(--warning-hover); }
 
 .btn-proximo {
@@ -135,7 +144,7 @@ button:hover {
   font-weight: 500;
 }
 
-/* CANVAS - ROBÔ MENOR */
+/* CANVAS */
 .grid-container { 
   flex: 1.2;
   min-width: 280px;
@@ -146,7 +155,7 @@ button:hover {
 
 canvas { 
   width: 100%;
-  max-width: 420px;        /* ← Reduzido (era 560px) */
+  max-width: 560px;
   aspect-ratio: 1 / 1;
   background: #f8f7f2; 
   border-radius: 22px; 
