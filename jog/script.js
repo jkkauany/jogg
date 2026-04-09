@@ -189,79 +189,146 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
-
 function drawRobot(px, py) {
   ctx.save();
+  
   ctx.translate(px, py);
-  ctx.scale(0.60, 0.60);
-  ctx.shadowColor = '#1e3a5f';
-  ctx.shadowBlur = 18;
+  
+  // Aumentado um pouco + mais largo
+  const scale = 0.51;
+  ctx.scale(scale, scale);
+
+  const ox = 0;      // centralizado
+  const oy = -9;     // ajuste vertical
+
+  // Sombra suave
+  ctx.shadowColor = 'rgba(30, 58, 95, 0.35)';
+  ctx.shadowBlur = 15;
   ctx.shadowOffsetY = 8;
+
   ctx.fillStyle = '#e0f2ff';
   ctx.strokeStyle = '#1e3a5f';
-  ctx.lineWidth = 9;
-  roundRect(ctx, -28, -12, 56, 65, 18);
+  ctx.lineWidth = 8;
+
+  // Corpo principal (mais largo)
+  roundRect(ctx, ox - 29, oy - 10, 58, 63, 17);
   ctx.fill();
   ctx.stroke();
-  roundRect(ctx, -31, -58, 62, 52, 14);
+
+  // Cabeça (mais larga)
+  roundRect(ctx, ox - 32, oy - 56, 64, 49, 15);
   ctx.fill();
   ctx.stroke();
+
   ctx.shadowBlur = 0;
+
+  // Visor escuro
   ctx.fillStyle = '#0a2540';
-  roundRect(ctx, -23, -51, 46, 37, 9);
+  roundRect(ctx, ox - 23.5, oy - 49, 47, 35, 9);
   ctx.fill();
+
+  // Olhos
   ctx.fillStyle = '#00f5ff';
-  ctx.fillRect(-14, -45, 9, 14);
-  ctx.fillRect(5, -45, 9, 14);
-  ctx.fillStyle = 'white';
-  ctx.fillRect(-11, -47, 3, 4);
-  ctx.fillRect(8, -47, 3, 4);
+  ctx.fillRect(ox - 14.5, oy - 44, 9, 13.5);
+  ctx.fillRect(ox + 5.5, oy - 44, 9, 13.5);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(ox - 12, oy - 46, 3, 4);
+  ctx.fillRect(ox + 8, oy - 46, 3, 4);
+
+  // Boca
   ctx.strokeStyle = '#00f5ff';
-  ctx.lineWidth = 3.5;
+  ctx.lineWidth = 3.3;
   ctx.beginPath();
-  ctx.arc(0, -28, 9, 0.3 * Math.PI, 0.7 * Math.PI);
+  ctx.arc(ox, oy - 28, 9, 0.25 * Math.PI, 0.75 * Math.PI);
   ctx.stroke();
+
+  // Antenas (podem subir um pouco acima do quadrado)
   ctx.strokeStyle = '#1e3a5f';
   ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.moveTo(-17, -65); ctx.lineTo(-23, -82);
-  ctx.moveTo(17, -65); ctx.lineTo(23, -82);
+  ctx.moveTo(ox - 17, oy - 61);
+  ctx.lineTo(ox - 23, oy - 81);
+  ctx.moveTo(ox + 17, oy - 61);
+  ctx.lineTo(ox + 23, oy - 81);
   ctx.stroke();
+
   ctx.fillStyle = '#1e3a5f';
-  ctx.beginPath(); ctx.arc(-23, -82, 5, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(23, -82, 5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); 
+  ctx.arc(ox - 23, oy - 81, 4.8, 0, Math.PI * 2); 
+  ctx.fill();
+  ctx.beginPath(); 
+  ctx.arc(ox + 23, oy - 81, 4.8, 0, Math.PI * 2); 
+  ctx.fill();
+
+  // Braços
   ctx.strokeStyle = '#1e3a5f';
-  ctx.lineWidth = 11;
-  ctx.beginPath(); ctx.moveTo(-28, 8); ctx.quadraticCurveTo(-48, 18, -52, 38); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(28, 8); ctx.quadraticCurveTo(48, 18, 52, 38); ctx.stroke();
-  ctx.lineWidth = 9;
-  ctx.beginPath(); ctx.moveTo(-13, 48); ctx.lineTo(-18, 72); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(13, 48); ctx.lineTo(18, 72); ctx.stroke();
+  ctx.lineWidth = 9.8;
+  ctx.beginPath();
+  ctx.moveTo(ox - 28, oy + 14);
+  ctx.quadraticCurveTo(ox - 46, oy + 21, ox - 50, oy + 39);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(ox + 28, oy + 14);
+  ctx.quadraticCurveTo(ox + 46, oy + 21, ox + 50, oy + 39);
+  ctx.stroke();
+
+  // Pernas
+  ctx.lineWidth = 8.8;
+  ctx.beginPath();
+  ctx.moveTo(ox - 13.5, oy + 49);
+  ctx.lineTo(ox - 18, oy + 73);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(ox + 13.5, oy + 49);
+  ctx.lineTo(ox + 16, oy + 73);
+  ctx.stroke();
+
   ctx.restore();
 }
 
 function drawChip(x, y, index, time) {
   if (chips[index].collected) return;
-  const px = x * CELL + CELL/2;
-  const py = y * CELL + CELL/2 + Math.sin(time * 3 + index) * 8;
-  const rot = Math.sin(time * 2.5 + index * 1.3) * 7;
+
+  const px = x * CELL + CELL / 2;
+  const py = y * CELL + CELL / 2 + Math.sin(time * 3 + index) * 7; // leve flutuação
+  const rot = Math.sin(time * 2.5 + index * 1.3) * 6;             // rotação mais suave
+
   ctx.save();
   ctx.translate(px, py);
   ctx.rotate(rot * Math.PI / 180);
-  ctx.fillStyle = '#10b981';
+
+  // Escala menor para combinar com o robô
+  const chipScale = 0.78;
+  ctx.scale(chipScale, chipScale);
+
+  // Sombra mais suave
   ctx.shadowColor = '#059669';
-  ctx.shadowBlur = 15;
-  roundRect(ctx, -23, -27, 46, 54, 9);
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 4;
+
+  ctx.fillStyle = '#10b981';
+
+  // Chip um pouco menor e mais proporcional
+  roundRect(ctx, -21, -25, 42, 50, 10);
   ctx.fill();
+
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 5;
+
+  // Borda branca mais fina
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 4.5;
   ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 26px Arial';
+
+  // Ícone 💾 maior e melhor centralizado
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 29px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('💾', 0, 3);
+  ctx.fillText('💾', 0, 2);
+
   ctx.restore();
 }
 
@@ -354,10 +421,32 @@ async function executarCodigo() {
     const cmd = line.trim();
     if (cmd === '') continue;
 
-    if (commands[cmd]) {
-      await commands[cmd]();
+    // Parse do comando: nome + parâmetro opcional
+    const match = cmd.match(/^(\w+)\s*\(?\s*(\d*)\s*\)?$/);
+    
+    if (!match) {
+      status.innerHTML = `❌ Comando inválido: <b>${cmd}</b>`;
+      isRunning = false;
+      return;
+    }
+
+    const commandName = match[1];
+    let quantidade = 1; // valor padrão
+
+    if (match[2] !== '') {
+      quantidade = parseInt(match[2]);
+      if (isNaN(quantidade) || quantidade < 1) {
+        status.innerHTML = `❌ Quantidade inválida em: <b>${cmd}</b> (use números positivos)`;
+        isRunning = false;
+        return;
+      }
+    }
+
+    // Executa o comando com a quantidade
+    if (commandFunctions[commandName]) {
+      await commandFunctions[commandName](quantidade);
     } else {
-      status.innerHTML = `❌ Comando desconhecido: <b>${cmd}</b>`;
+      status.innerHTML = `❌ Comando desconhecido: <b>${commandName}</b>`;
       isRunning = false;
       return;
     }
@@ -365,10 +454,10 @@ async function executarCodigo() {
 
   isRunning = false;
 
-  // Limpa o editor automaticamente após executar
+  // Limpa o editor após executar
   codeArea.innerHTML = '';
 
-  // Verifica se completou o nível
+  // Verifica vitória
   if (chips.every(c => c.collected)) {
     status.innerHTML = `🎉 Nível ${levels[currentLevelIndex].number} concluído!`;
     document.getElementById('btn-proximo').style.display = 'flex';
@@ -378,11 +467,40 @@ async function executarCodigo() {
   }
 }
 
-const commands = {
-  'moverEsquerda()': () => moveTo(Math.max(0, robot.gridX - 1), robot.gridY),
-  'moverDireita()': () => moveTo(Math.min(COLS-1, robot.gridX + 1), robot.gridY),
-  'moverCima()': () => moveTo(robot.gridX, Math.max(0, robot.gridY - 1)),
-  'moverBaixo()': () => moveTo(robot.gridX, Math.min(ROWS-1, robot.gridY + 1))
+async function moverDireita(quantidade = 1) {
+  for (let i = 0; i < quantidade; i++) {
+    if (robot.gridX >= COLS - 1) break; // não ultrapassa o limite
+    await moveTo(robot.gridX + 1, robot.gridY);
+  }
+}
+
+async function moverEsquerda(quantidade = 1) {
+  for (let i = 0; i < quantidade; i++) {
+    if (robot.gridX <= 0) break;
+    await moveTo(robot.gridX - 1, robot.gridY);
+  }
+}
+
+async function moverCima(quantidade = 1) {
+  for (let i = 0; i < quantidade; i++) {
+    if (robot.gridY <= 0) break;
+    await moveTo(robot.gridX, robot.gridY - 1);
+  }
+}
+
+async function moverBaixo(quantidade = 1) {
+  for (let i = 0; i < quantidade; i++) {
+    if (robot.gridY >= ROWS - 1) break;
+    await moveTo(robot.gridX, robot.gridY + 1);
+  }
+}
+
+// Objeto com as funções (agora aceitam parâmetro)
+const commandFunctions = {
+  'moverDireita': moverDireita,
+  'moverEsquerda': moverEsquerda,
+  'moverCima': moverCima,
+  'moverBaixo': moverBaixo
 };
 
 function loadLevel(index) {
