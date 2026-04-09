@@ -302,7 +302,6 @@ function drawRobot(px, py) {
   ctx.restore();
 }
 
-// Chip normal (verde)
 function drawChip(x, y, index, time) {
   if (chips[index].collected) return;
   const px = x * CELL + CELL / 2;
@@ -331,7 +330,6 @@ function drawChip(x, y, index, time) {
   ctx.restore();
 }
 
-// Chip corrompido (vermelho)
 function drawCorruptedChip(x, y, index, time) {
   const px = x * CELL + CELL / 2;
   const py = y * CELL + CELL / 2 + Math.sin(time * 3 + index) * 7;
@@ -348,7 +346,7 @@ function drawCorruptedChip(x, y, index, time) {
   roundRect(ctx, -21, -25, 42, 50, 10);
   ctx.fill();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#5fff02';
+  ctx.strokeStyle = '#26ff0a';
   ctx.lineWidth = 4.5;
   ctx.stroke();
   ctx.fillStyle = '#ffffff';
@@ -359,7 +357,6 @@ function drawCorruptedChip(x, y, index, time) {
   ctx.restore();
 }
 
-// Buracos e pisos quebrados
 function drawTrap(x, y, time) {
   const px = x * CELL + CELL / 2;
   const py = y * CELL + CELL / 2;
@@ -449,7 +446,6 @@ async function moveTo(newGridX, newGridY) {
   robotPixel.y = targetY;
   draw();
 
-  // ==================== ALERTAS DE OBSTÁCULOS ====================
   if (traps.some(t => t.x === robot.gridX && t.y === robot.gridY)) {
     shouldStopExecution = true;
     alert('💥 Você caiu no buraco negro!\n\nA fase foi resetada.');
@@ -468,7 +464,6 @@ async function moveTo(newGridX, newGridY) {
     }
   }
 
-  // Coleta normal de chips verdes
   chips.forEach(chip => {
     if (!chip.collected && chip.x === robot.gridX && chip.y === robot.gridY) {
       chip.collected = true;
@@ -484,6 +479,7 @@ async function moveTo(newGridX, newGridY) {
     document.getElementById('status').innerHTML = `🎉 Nível ${levels[currentLevelIndex].number} concluído!`;
     document.getElementById('btn-proximo').style.display = 'flex';
     setTimeout(() => alert(`🏆 Nível ${levels[currentLevelIndex].number} concluído com sucesso!`), 400);
+    saveProgress(levels[currentLevelIndex].number);
   }
 }
 
@@ -541,14 +537,13 @@ async function executarCodigo() {
   }
 
   isRunning = false;
-  codeArea.innerHTML = '';
 
   if (chips.every(c => c.collected)) {
     status.innerHTML = `🎉 Nível ${levels[currentLevelIndex].number} concluído!`;
     document.getElementById('btn-proximo').style.display = 'flex';
-    saveProgress(levels[currentLevelIndex].number);
   } else {
     status.innerHTML = '✅ Código executado! Editor limpo.';
+    codeArea.innerHTML = '';
   }
 }
 
@@ -587,6 +582,55 @@ const commandFunctions = {
   'moverBaixo': moverBaixo
 };
 
+// ==================== ATALHOS COM SETAS DO TECLADO ==================== //
+const codeArea = document.getElementById('code');
+
+codeArea.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    let comando = '';
+
+    switch (e.key) {
+        case 'ArrowRight':
+            comando = 'moverDireita()';
+            break;
+        case 'ArrowLeft':
+            comando = 'moverEsquerda()';
+            break;
+        case 'ArrowUp':
+            comando = 'moverCima()';
+            break;
+        case 'ArrowDown':
+            comando = 'moverBaixo()';
+            break;
+        default:
+            return;
+    }
+
+    e.preventDefault();
+    inserirNoCursor(comando);
+    inserirNoCursor('\n');
+});
+
+function inserirNoCursor(texto) {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+
+    const textNode = document.createTextNode(texto);
+    range.insertNode(textNode);
+
+    range.setStartAfter(textNode);
+    range.setEndAfter(textNode);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    codeArea.scrollTop = codeArea.scrollHeight;
+}
+
+// ==================== FUNÇÕES DO JOGO ==================== //
 function loadLevel(index) {
   currentLevelIndex = index;
   const level = levels[index];
@@ -624,15 +668,10 @@ function mostrarDica() {
 
 function mostrarSolucao() {
   const level = levels[currentLevelIndex];
-  if (currentLevelIndex === 3) {
-    document.getElementById('code').innerText = level.solution;
-    document.getElementById('status').innerHTML = '💡 Mensagem carregada!';
-  } else if (level.solution && level.solution.trim() !== '') {
-    document.getElementById('code').innerText = level.solution;
-    document.getElementById('status').innerHTML = '📋 Solução carregada!';
-  } else {
-    alert('🤖 Neste nível a solução ainda não foi fornecida.');
-  }
+  document.getElementById('code').innerText = level.solution;
+  document.getElementById('status').innerHTML = currentLevelIndex === 3 
+    ? '💡 Mensagem carregada!' 
+    : '📋 Solução carregada!';
 }
 
 function resetNivel() {
@@ -657,7 +696,7 @@ setInterval(() => {
   if (!isRunning) draw();
 }, 80);
 
-// Atalho Ctrl + Enter
+// Atalho Ctrl + Enter para executar
 document.getElementById('code').addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.key === 'Enter') {
     e.preventDefault();
