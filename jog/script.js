@@ -13,6 +13,51 @@ let traps = [];
 let isRunning = false;
 let shouldStopExecution = false;
 
+// ==================== NOVO: VIDAS E TIMER ==================== //
+let lives = 3;
+let timeLeft = 60;
+let timerInterval = null;
+
+const levelTimes = [60, 120, 180, 300]; // Fase 1: 1min, 2: 2min, 3: 3min, 4: 5min
+
+function updateLivesUI() {
+  document.getElementById('lives').innerHTML = '❤️'.repeat(lives) + '♡'.repeat(3 - lives);
+}
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timeLeft = levelTimes[currentLevelIndex];
+  document.getElementById('time-left').textContent = timeLeft;
+  document.getElementById('timer').classList.remove('low');
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById('time-left').textContent = timeLeft;
+
+    if (timeLeft <= 10) document.getElementById('timer').classList.add('low');
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      loseLife("⏰ Tempo esgotado!");
+    }
+  }, 1000);
+}
+
+function loseLife(msg = "Você perdeu uma vida!") {
+  clearInterval(timerInterval);
+  lives--;
+  updateLivesUI();
+
+  if (lives <= 0) {
+    alert("💀 GAME OVER\n\nVocê perdeu todas as 3 vidas!");
+    lives = 3;
+    currentLevelIndex = 0;
+    loadLevel(0);
+  } else {
+    alert(msg + `\n\nVidas restantes: ${lives}`);
+    resetNivel();
+  }
+}
+
 // ==================== PROGRESSO ==================== //
 let completedLevels = [];
 
@@ -115,7 +160,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawRobot(px, py) { /* mesma função do código original */ 
+function drawRobot(px, py) { 
   ctx.save();
   ctx.translate(px, py);
   const scale = 0.51;
@@ -180,7 +225,7 @@ function drawRobot(px, py) { /* mesma função do código original */
   ctx.restore();
 }
 
-function drawChip(x, y, index, time) { /* mesma função */ 
+function drawChip(x, y, index, time) { 
   if (chips[index].collected) return;
   const px = x * CELL + CELL / 2;
   const py = y * CELL + CELL / 2 + Math.sin(time * 3 + index) * 7;
@@ -208,7 +253,7 @@ function drawChip(x, y, index, time) { /* mesma função */
   ctx.restore();
 }
 
-function drawCorruptedChip(x, y, index, time) { /* mesma função */ 
+function drawCorruptedChip(x, y, index, time) { 
   const px = x * CELL + CELL / 2;
   const py = y * CELL + CELL / 2 + Math.sin(time * 3 + index) * 7;
   const rot = Math.sin(time * 2.5 + index * 1.3) * 6;
@@ -235,7 +280,7 @@ function drawCorruptedChip(x, y, index, time) { /* mesma função */
   ctx.restore();
 }
 
-function drawTrap(x, y, time) { /* mesma função */ 
+function drawTrap(x, y, time) { 
   const px = x * CELL + CELL / 2;
   const py = y * CELL + CELL / 2;
   ctx.save();
@@ -299,6 +344,7 @@ function draw() {
   drawRobot(robotPixel.x, robotPixel.y);
 }
 
+// ==================== MOVIMENTO E LÓGICA ==================== //
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function moveTo(newGridX, newGridY) {
@@ -325,18 +371,14 @@ async function moveTo(newGridX, newGridY) {
 
   if (traps.some(t => t.x === robot.gridX && t.y === robot.gridY)) {
     shouldStopExecution = true;
-    alert('💥 Você caiu no buraco negro!\n\nA fase foi resetada.');
-    document.getElementById('status').innerHTML = `💥 Caiu em um buraco! Resetando...`;
-    setTimeout(resetNivel, 800);
+    loseLife("💥 Você caiu no buraco negro!");
     return;
   }
 
   for (let i = 0; i < corruptedChips.length; i++) {
     if (corruptedChips[i].x === robot.gridX && corruptedChips[i].y === robot.gridY) {
       shouldStopExecution = true;
-      alert('⚠️ Chip corrompido coletado!\n\nA fase foi resetada.');
-      document.getElementById('status').innerHTML = `⚠️ Chip corrompido! Resetando...`;
-      setTimeout(resetNivel, 800);
+      loseLife("⚠️ Chip corrompido coletado!");
       return;
     }
   }
@@ -522,6 +564,8 @@ function loadLevel(index) {
   document.getElementById('status').innerHTML = '';
   document.getElementById('btn-proximo').style.display = 'none';
 
+  updateLivesUI();
+  startTimer();
   draw();
 }
 

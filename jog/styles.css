@@ -249,4 +249,39 @@ canvas {
   .controls {
     flex-direction: column;
   }
+
+/* HUD - Vidas e Timer (adicione isso) */
+.hud {
+  background: var(--dark-light);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #3a3a4a;
+}
+
+.lives {
+  font-size: 32px;
+  letter-spacing: 4px;
+}
+
+.timer {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffd93d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer.low {
+  color: #ff4757;
+  animation: pulse 800ms infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
 }

@@ -29,7 +29,13 @@
         <span style="color:#ffd93d; cursor:pointer;" onclick="mostrarDica()">💡 Dica</span>
       </div>
       
-      <!-- Área de código (agora maior) -->
+      <!-- HUD Vidas + Timer (NOVA PARTE) -->
+      <div class="hud">
+        <div id="lives" class="lives">❤️❤️❤️</div>
+        <div id="timer" class="timer">⏱️ <span id="time-left">60</span>s</div>
+      </div>
+      
+      <!-- Área de código -->
       <pre class="code-area" id="code" contenteditable="true" spellcheck="false"></pre>
       
       <!-- Botões abaixo do editor -->
@@ -50,7 +56,7 @@
     </div>
   </div>
 
-  <!-- MODAL DOCUMENTAÇÃO -->
+  <!-- MODAL DOCUMENTAÇÃO (sem nenhuma mudança) -->
   <div id="modal-docs">
     <div class="modal-content">
       <h2>📖 Comandos Disponíveis</h2>
@@ -61,10 +67,10 @@
         <li><strong>moverBaixo()</strong> — Move o robô 1 casa para baixo</li>
       </ul><br>
       <p style="font-size:14px; color:#64748b; margin-bottom:24px;">
-        O robô tambem podera anda com parametros EX (x) = x quantidades de casas.
-       <br> OBS: para avançar apenas UMA casa o parametro ficara sem uma quantidade especifica EX () <br>
+        O robô tambem podera anda com parametros EX (x) = x quantidades de casas.<br>
+        OBS: para avançar apenas UMA casa o parametro ficara sem uma quantidade especifica EX () <br>
         Escreva um comando por linha no editor.<br>
-       O robô tambem anda com os comandos de setas?<br>
+        O robô tambem anda com os comandos de setas?<br>
         O robô só entende esses 4 comandos por enquanto.
       </p>
       <button onclick="fecharModal()" class="btn-fechar">Fechar</button>
