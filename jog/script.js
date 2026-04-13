@@ -79,7 +79,7 @@ function updateProgressBar() {
   }
 }
 
-// =============== NÍVEIS (MAPA RESTAURADO) =============== //
+// =============== NÍVEIS =============== //
 const levels = [
   {
     number: 1,
@@ -505,10 +505,16 @@ const commandFunctions = {
   'moverBaixo': moverBaixo
 };
 
-// ==================== LOAD LEVEL (COM BLOQUEIO) ==================== //
+// ==================== LOAD LEVEL (AGORA COM RESET DE VIDAS) ==================== //
 function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   currentLevelIndex = index;
   const level = levels[index];
+
+  // ==================== RESET DE VIDAS ====================
+  if (showStartButton) {
+    lives = 3;                    // ← Nova linha: sempre 3 vidas ao iniciar fase
+    updateLivesUI();
+  }
 
   robot = { gridX: level.startX, gridY: level.startY };
   robotPixel = { x: level.startX * CELL + CELL/2, y: level.startY * CELL + CELL/2 };
@@ -524,7 +530,6 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   const codeArea = document.getElementById('code');
   codeArea.innerHTML = '';
 
-  // BLOQUEIA a caixa antes de iniciar
   if (showStartButton) {
     codeArea.contentEditable = 'false';
     codeArea.style.opacity = '0.5';
@@ -535,7 +540,10 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
     codeArea.style.cursor = 'text';
   }
 
+  // ==================== CONTROLE DO BOTÃO SOLUÇÃO ====================
+  // Esconde o botão de solução antes de iniciar (igual ao bloqueio da caixa de código)
   document.getElementById('btn-start').style.display = showStartButton ? 'flex' : 'none';
+  document.getElementById('btn-solucao').style.display = showStartButton ? 'none' : 'flex';
 
   if (showStartButton) {
     if (timerInterval) {
@@ -567,7 +575,7 @@ function loseLife(msg = "Você perdeu uma vida!") {
     statusEl.innerHTML = `💥 ${msg} — Reiniciando automaticamente...`;
 
     setTimeout(() => {
-      loadLevel(currentLevelIndex, false, true);  // mantém o timer
+      loadLevel(currentLevelIndex, false, true);
     }, 1200);
   }
 }
@@ -580,6 +588,8 @@ function startGame() {
   codeArea.style.cursor = 'text';
 
   document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-solucao').style.display = 'flex';   // ← Mostra o botão de solução ao iniciar
+
   document.getElementById('status').innerHTML = '🎮 Fase iniciada! Boa sorte!';
   startTimer();
   draw();
