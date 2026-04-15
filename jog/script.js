@@ -28,7 +28,47 @@ let levelStartTime = 0;
 let completedLevels = [];
 let levelStars = {};
 let usedSolution = false;
-let fromMenu = false;                    // ← para o tutorial voltar ao menu
+let fromMenu = false;
+
+// ====================== TEMAS POR NÍVEL ======================
+const levelThemes = [
+  // Nível 1 - Azul Neon (clean e acolhedor)
+  {
+    canvasBg: '#e0f2ff',
+    gridColor: '#7dd3fc',
+    editorBg: '#0a1428',
+    headerBg: '#1e2a4a',
+    primaryBtn: '#00e6b8',
+    successColor: '#22ffaa'
+  },
+  // Nível 2 - Roxo Cyber (vibrante)
+  {
+    canvasBg: '#f3e8ff',
+    gridColor: '#c084fc',
+    editorBg: '#1a0f2e',
+    headerBg: '#2e1b4a',
+    primaryBtn: '#a855f7',
+    successColor: '#e879f9'
+  },
+  // Nível 3 - Verde Esmeralda (energético)
+  {
+    canvasBg: '#ecfdf5',
+    gridColor: '#4ade80',
+    editorBg: '#052e16',
+    headerBg: '#14532d',
+    primaryBtn: '#22c55e',
+    successColor: '#86efac'
+  },
+  // Nível 4 - Laranja Épico (desafio final)
+  {
+    canvasBg: '#fffbeb',
+    gridColor: '#fcd34d',
+    editorBg: '#3f2a0f',
+    headerBg: '#78350f',
+    primaryBtn: '#f97316',
+    successColor: '#fbbf24'
+  }
+];
 
 function updateLivesUI() {
   document.getElementById('lives').innerHTML = '❤️'.repeat(lives) + '♡'.repeat(3 - lives);
@@ -151,71 +191,9 @@ function showMainMenu() {
   updateMenuStars();
 }
 
-
 function updateMenuStars() {
   const total = Object.values(levelStars).reduce((a, b) => a + b, 0);
   document.getElementById('menu-total-stars').textContent = total;
-}
-// ====================== TELA DE MENU ======================
-function showMainMenu() {
-  document.getElementById('main-menu-screen').style.display = 'flex';
-  updateMenuStars();
-  
-  // Remove o botão Menu antigo da barra inferior quando voltar ao menu
-  removeOldMenuButton();
-}
-
-function updateMenuStars() {
-  const total = Object.values(levelStars).reduce((a, b) => a + b, 0);
-  document.getElementById('menu-total-stars').textContent = total;
-}
-
-// ====================== BOTÃO MENU SUPERIOR ESQUERDO ======================
-function createMenuButton() {
-  // Remove duplicatas
-  let existing = document.getElementById('game-menu-btn');
-  if (existing) existing.remove();
-
-  // Remove o botão antigo da barra inferior "Robô Codificador"
-  removeOldMenuButton();
-
-  const btn = document.createElement('button');
-  btn.id = 'game-menu-btn';
-  btn.innerHTML = '☰ Menu';
-  btn.style.cssText = `
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    padding: 10px 20px;
-    background: #1e2937;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  `;
-
-  btn.onmouseover = () => btn.style.background = '#334155';
-  btn.onmouseout  = () => btn.style.background = '#1e2937';
-
-  btn.onclick = voltarAoMenuDoJogo;
-
-  document.body.appendChild(btn);
-}
-
-// Função auxiliar para remover o botão antigo da barra inferior
-function removeOldMenuButton() {
-  document.querySelectorAll('button, div').forEach(el => {
-    if (el.textContent && el.textContent.trim() === 'Menu') {
-      const parent = el.parentElement;
-      if (parent && parent.style.backgroundColor === 'rgb(55, 65, 81)') {
-        el.remove();
-      }
-    }
-  });
 }
 
 function startGameFromMenu() {
@@ -457,14 +435,14 @@ function drawCorruptedChip(x, y, index, time) {
   ctx.rotate(rot * Math.PI / 180);
   const chipScale = 0.78;
   ctx.scale(chipScale, chipScale);
-  ctx.shadowColor = '#059669';
+  ctx.shadowColor = '#b91c1c';
   ctx.shadowBlur = 14;
   ctx.shadowOffsetY = 4;
-  ctx.fillStyle = '#10b981';
+  ctx.fillStyle = '#ef4444';
   roundRect(ctx, -21, -25, 42, 50, 10);
   ctx.fill();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#48ff00';
+  ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 4.5;
   ctx.stroke();
   ctx.fillStyle = '#ffffff';
@@ -539,7 +517,9 @@ function drawTimeBonus(x, y, index, time) {
 function draw() {
   const time = Date.now() / 1000;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#f8f7f2';
+  
+  // === TEMA DO NÍVEL ===
+  ctx.fillStyle = window.currentCanvasBg || '#e0f2ff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.save();
@@ -551,7 +531,8 @@ function draw() {
   ctx.fillText('< />', canvas.width/2, canvas.height/2 + 15);
   ctx.restore();
 
-  ctx.strokeStyle = '#d1d5db';
+  // Grid com cor do tema
+  ctx.strokeStyle = window.currentGridColor || '#d1d5db';
   ctx.lineWidth = 2.8;
   for (let i = 0; i <= COLS; i++) {
     ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke();
@@ -566,6 +547,46 @@ function draw() {
   timeBonusChips.forEach((_, i) => drawTimeBonus(timeBonusChips[i].x, timeBonusChips[i].y, i, time));
 
   drawRobot(robotPixel.x, robotPixel.y);
+}
+
+// ====================== APLICAR TEMA DO NÍVEL ======================
+function applyLevelTheme() {
+  const theme = levelThemes[currentLevelIndex];
+  if (!theme) return;
+
+  window.currentCanvasBg = theme.canvasBg;
+  window.currentGridColor = theme.gridColor;
+
+  // Editor
+  const editor = document.querySelector('.editor');
+  const codeArea = document.getElementById('code');
+  if (editor) editor.style.background = theme.editorBg;
+  if (codeArea) {
+    codeArea.style.background = theme.editorBg;
+    codeArea.style.color = '#e0f2fe';
+  }
+
+  // Header
+  const header = document.querySelector('.header');
+  if (header) header.style.background = theme.headerBg;
+
+  // Botões principais
+  const btnExec = document.getElementById('btn-exec');
+  const btnProximo = document.getElementById('btn-proximo');
+  if (btnExec) btnExec.style.background = theme.primaryBtn;
+  if (btnProximo) btnProximo.style.background = theme.primaryBtn;
+
+  // Status success
+  let style = document.getElementById('dynamic-theme-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'dynamic-theme-style';
+    document.head.appendChild(style);
+  }
+  style.innerHTML = `
+    .status.success { color: ${theme.successColor} !important; }
+    .btn-start { background: linear-gradient(135deg, ${theme.primaryBtn}, #10b981) !important; }
+  `;
 }
 
 // ==================== MOVIMENTO ==================== //
@@ -940,6 +961,7 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   }
 
   updateLivesUI();
+  applyLevelTheme();   // ← Aplicando o tema do nível
   draw();
   createMenuButton();
 }
