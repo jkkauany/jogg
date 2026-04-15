@@ -20,7 +20,6 @@ let lives = 3;
 let timeLeft = 60;
 let timerInterval = null;
 
-// NOVO TEMPO DAS FASES
 const levelTimes = [40, 60, 120, 120];
 
 let penaltyTime = 0;
@@ -29,6 +28,9 @@ let levelStartTime = 0;
 let completedLevels = [];
 let levelStars = {};
 let usedSolution = false;
+
+// ✅ NOVA VARIÁVEL (para voltar do tutorial para o menu)
+let fromMenu = false;
 
 function updateLivesUI() {
   document.getElementById('lives').innerHTML = '❤️'.repeat(lives) + '♡'.repeat(3 - lives);
@@ -145,7 +147,7 @@ function updateProgressBar() {
   }
 }
 
-// ====================== TELA DE MENU (APENAS ISSO FOI ADICIONADO) ======================
+// ====================== TELA DE MENU ======================
 function showMainMenu() {
   document.getElementById('main-menu-screen').style.display = 'flex';
   updateMenuStars();
@@ -211,6 +213,27 @@ function resetProgressFromMenu() {
     updateMenuStars();
     alert('✅ Progresso resetado!');
     closeLevelSelector();
+  }
+}
+
+// ==================== MODAL DE COMANDOS (ATUALIZADO) ====================
+function mostrarDocs() {
+  const menuScreen = document.getElementById('main-menu-screen');
+  
+  fromMenu = (menuScreen.style.display === 'flex');
+  if (fromMenu) {
+    menuScreen.style.display = 'none';
+  }
+
+  document.getElementById('modal-docs').style.display = 'flex';
+}
+
+function fecharModal() {
+  document.getElementById('modal-docs').style.display = 'none';
+
+  if (fromMenu) {
+    document.getElementById('main-menu-screen').style.display = 'flex';
+    fromMenu = false;
   }
 }
 
@@ -920,14 +943,6 @@ function mostrarSolucao() {
   }
 }
 
-function mostrarDocs() {
-  document.getElementById('modal-docs').style.display = 'flex';
-}
-
-function fecharModal() {
-  document.getElementById('modal-docs').style.display = 'none';
-}
-
 // ==================== TECLADO ==================== //
 document.addEventListener('keydown', function(e) {
   const codeArea = document.getElementById('code');
@@ -959,7 +974,7 @@ document.addEventListener('keydown', function(e) {
 // ==================== INICIAR O JOGO ==================== //
 loadProgress();
 updateProgressBar();
-showMainMenu();        // ← Tela de menu aparece antes de jogar
+showMainMenu();
 
 setInterval(() => {
   if (!isRunning) draw();

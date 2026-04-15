@@ -315,8 +315,7 @@ canvas {
   letter-spacing: 1px;
 }
 
-
-/* ====================== TELA DE MENU (apenas isso foi adicionado) ====================== */
+/* ====================== TELA DE MENU ====================== */
 .menu-screen {
   display: none;
   position: fixed;
