@@ -20,7 +20,7 @@ let lives = 3;
 let timeLeft = 60;
 let timerInterval = null;
 
-const levelTimes = [40, 60, 120, 120];
+const levelTimes = [60, 60, 120, 120];
 
 let penaltyTime = 0;
 let levelStartTime = 0;
@@ -725,7 +725,7 @@ function checkVictory() {
   return false;
 }
 
-// ==================== TELA FINAL (COM BOTÃO VOLTAR AO MENU) ==================== //
+// ==================== TELA FINAL ==================== //
 function mostrarTelaFinal() {
   let totalStars = Object.values(levelStars).reduce((a, b) => a + b, 0);
   const maxPossible = 12;
@@ -975,6 +975,22 @@ document.addEventListener('keydown', function(e) {
   sel.removeAllRanges();
   sel.addRange(range);
 });
+
+// ====================== VOLTAR AO MENU DO JOGO ======================
+function voltarAoMenuDoJogo() {
+  if (isRunning) {
+    isRunning = false;
+    shouldStopExecution = true;
+  }
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  document.getElementById('status').innerHTML = '';
+
+  showMainMenu();
+}
 
 // ==================== INICIAR O JOGO ==================== //
 loadProgress();
