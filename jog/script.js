@@ -151,9 +151,71 @@ function showMainMenu() {
   updateMenuStars();
 }
 
+
 function updateMenuStars() {
   const total = Object.values(levelStars).reduce((a, b) => a + b, 0);
   document.getElementById('menu-total-stars').textContent = total;
+}
+// ====================== TELA DE MENU ======================
+function showMainMenu() {
+  document.getElementById('main-menu-screen').style.display = 'flex';
+  updateMenuStars();
+  
+  // Remove o botão Menu antigo da barra inferior quando voltar ao menu
+  removeOldMenuButton();
+}
+
+function updateMenuStars() {
+  const total = Object.values(levelStars).reduce((a, b) => a + b, 0);
+  document.getElementById('menu-total-stars').textContent = total;
+}
+
+// ====================== BOTÃO MENU SUPERIOR ESQUERDO ======================
+function createMenuButton() {
+  // Remove duplicatas
+  let existing = document.getElementById('game-menu-btn');
+  if (existing) existing.remove();
+
+  // Remove o botão antigo da barra inferior "Robô Codificador"
+  removeOldMenuButton();
+
+  const btn = document.createElement('button');
+  btn.id = 'game-menu-btn';
+  btn.innerHTML = '☰ Menu';
+  btn.style.cssText = `
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    padding: 10px 20px;
+    background: #1e2937;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  `;
+
+  btn.onmouseover = () => btn.style.background = '#334155';
+  btn.onmouseout  = () => btn.style.background = '#1e2937';
+
+  btn.onclick = voltarAoMenuDoJogo;
+
+  document.body.appendChild(btn);
+}
+
+// Função auxiliar para remover o botão antigo da barra inferior
+function removeOldMenuButton() {
+  document.querySelectorAll('button, div').forEach(el => {
+    if (el.textContent && el.textContent.trim() === 'Menu') {
+      const parent = el.parentElement;
+      if (parent && parent.style.backgroundColor === 'rgb(55, 65, 81)') {
+        el.remove();
+      }
+    }
+  });
 }
 
 function startGameFromMenu() {
@@ -879,6 +941,7 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
 
   updateLivesUI();
   draw();
+  createMenuButton();
 }
 
 function loseLife(msg = "Você perdeu uma vida!") {
@@ -915,6 +978,7 @@ function startGame() {
   document.getElementById('status').innerHTML = '🎮 Fase iniciada! Boa sorte!';
   startTimer();
   draw();
+  createMenuButton();
 }
 
 function resetNivel() {
