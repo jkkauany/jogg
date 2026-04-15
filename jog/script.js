@@ -924,7 +924,7 @@ function resetNivel() {
 }
 
 function mostrarDica() {
-  alert('💡 Dica: Planeje o caminho antes de executar. Evite chips corrompidos e buracos!');
+  alert('💡 Dica: Planeje antes de agir. Assim você evita erros e avança com mais segurança. Tente imaginar o caminho do robô e quais comandos serão necessários para coletar os chips sem cair nas armadilhas!');
 }
 
 function mostrarSolucao() {
