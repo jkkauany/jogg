@@ -105,6 +105,54 @@
     </div>
   </div>
 
+  <!-- ====================== TELA DE MENU PRINCIPAL (apenas isso foi adicionado) ====================== -->
+  <div id="main-menu-screen" class="menu-screen">
+    <div class="menu-content">
+      <div class="menu-header">
+        🤖 <span>Robô Codificador</span><span style="font-size:28px; margin-left:8px;">PRO</span>
+      </div>
+      
+      <h1 class="menu-title">Bem-vindo, Programador!</h1>
+      <p class="menu-subtitle">Colete os chips e domine a arte da programação</p>
+      
+      <div class="total-stars">
+        <span id="menu-total-stars">0</span> ⭐
+        <small>de 12 estrelas</small>
+      </div>
+
+      <div class="menu-buttons">
+        <button onclick="startGameFromMenu()" class="btn-menu-primary">
+          ▶️ INICIAR JOGO
+        </button>
+        
+        <button onclick="showLevelSelector()" class="btn-menu-secondary">
+          📋 Selecionar Nível
+        </button>
+        
+        <button onclick="mostrarDocs()" class="btn-menu-secondary">
+          📖 Como Jogar
+        </button>
+        
+        <button onclick="resetProgressFromMenu()" class="btn-menu-warning">
+          🗑️ Resetar Progresso
+        </button>
+      </div>
+
+      <div class="menu-footer">
+        <small>Feito com ❤️ para quem quer aprender codificando</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== SELETOR DE NÍVEIS (apenas isso foi adicionado) ====================== -->
+  <div id="level-selector-modal" class="modal-levels">
+    <div class="modal-content-levels">
+      <h2>Escolha o Nível</h2>
+      <div id="levels-grid" class="levels-grid"></div>
+      <button onclick="closeLevelSelector()" class="btn-fechar">Fechar</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

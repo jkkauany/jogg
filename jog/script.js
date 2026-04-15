@@ -127,6 +127,7 @@ function resetProgress() {
     completedLevels = [];
     levelStars = {};
     updateProgressBar();
+    updateMenuStars();
     loadLevel(0, true);
     alert('✅ Progresso resetado!');
   }
@@ -141,6 +142,75 @@ function updateProgressBar() {
     const stars = levelStars[i] ? '⭐'.repeat(levelStars[i]) : '';
     dot.innerHTML = `${i}<span class="stars">${stars}</span>`;
     bar.appendChild(dot);
+  }
+}
+
+// ====================== TELA DE MENU (APENAS ISSO FOI ADICIONADO) ======================
+function showMainMenu() {
+  document.getElementById('main-menu-screen').style.display = 'flex';
+  updateMenuStars();
+}
+
+function updateMenuStars() {
+  const total = Object.values(levelStars).reduce((a, b) => a + b, 0);
+  document.getElementById('menu-total-stars').textContent = total;
+}
+
+function startGameFromMenu() {
+  document.getElementById('main-menu-screen').style.display = 'none';
+  const maxCompleted = completedLevels.length ? Math.max(...completedLevels) : 0;
+  const startIndex = Math.min(maxCompleted, levels.length - 1);
+  loadLevel(startIndex, true);
+}
+
+function showLevelSelector() {
+  document.getElementById('main-menu-screen').style.display = 'none';
+  const modal = document.getElementById('level-selector-modal');
+  modal.style.display = 'flex';
+
+  const grid = document.getElementById('levels-grid');
+  grid.innerHTML = '';
+
+  for (let i = 1; i <= 4; i++) {
+    const level = levels.find(l => l.number === i);
+    if (!level) continue;
+
+    const isUnlocked = (i === 1) || completedLevels.includes(i - 1);
+    const stars = levelStars[i] || 0;
+
+    const card = document.createElement('div');
+    card.className = `level-card ${isUnlocked ? '' : 'locked'} ${stars > 0 ? 'completed' : ''}`;
+    card.innerHTML = `
+      <div class="level-num">${i}</div>
+      <div class="level-title">${level.title.split('—')[1] || level.title}</div>
+      <div class="stars">${'⭐'.repeat(stars) || '☆☆☆'}</div>
+    `;
+
+    if (isUnlocked) {
+      card.onclick = () => {
+        document.getElementById('level-selector-modal').style.display = 'none';
+        document.getElementById('main-menu-screen').style.display = 'none';
+        loadLevel(i - 1, true);
+      };
+    }
+    grid.appendChild(card);
+  }
+}
+
+function closeLevelSelector() {
+  document.getElementById('level-selector-modal').style.display = 'none';
+  showMainMenu();
+}
+
+function resetProgressFromMenu() {
+  if (confirm('🗑️ Deseja apagar TODO o progresso e começar do zero?')) {
+    localStorage.removeItem('robotCodificadorProgress');
+    completedLevels = [];
+    levelStars = {};
+    updateProgressBar();
+    updateMenuStars();
+    alert('✅ Progresso resetado!');
+    closeLevelSelector();
   }
 }
 
@@ -467,7 +537,6 @@ async function moveTo(newGridX, newGridY) {
     }
   });
 
-  // CHIP BÔNUS — AGORA SÓ +15 SEGUNDOS
   timeBonusChips.forEach(bonus => {
     if (!bonus.collected && bonus.x === robot.gridX && bonus.y === robot.gridY) {
       bonus.collected = true;
@@ -889,9 +958,8 @@ document.addEventListener('keydown', function(e) {
 
 // ==================== INICIAR O JOGO ==================== //
 loadProgress();
-const maxCompleted = completedLevels.length ? Math.max(...completedLevels) : 0;
-const startIndex = Math.min(maxCompleted, levels.length - 1);
-loadLevel(startIndex, true);
+updateProgressBar();
+showMainMenu();        // ← Tela de menu aparece antes de jogar
 
 setInterval(() => {
   if (!isRunning) draw();
