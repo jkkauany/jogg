@@ -808,34 +808,59 @@ function checkVictory() {
   return false;
 }
 
-// ==================== TELA FINAL ==================== //
 function mostrarTelaFinal() {
+  // Calcula o total real com base no que foi salvo (inclui penalidade da solução)
   let totalStars = Object.values(levelStars).reduce((a, b) => a + b, 0);
   const maxPossible = 12;
 
+  // Aplica penalidade da solução (se usada)
   let solutionPenaltyText = "";
   if (usedSolution) {
     totalStars = Math.max(0, totalStars - 2);
     solutionPenaltyText = `<p style="color:#f87171; margin:15px 0; font-size:17px;">⚠️ -2 estrelas de penalidade por usar a solução</p>`;
   }
 
+  // Rating baseado no total final
   let rating = "", emoji = "", color = "";
-  if (totalStars === 12) { rating = "🏆 Desempenho PERFEITO! Você é um mestre!"; emoji = "🌟"; color = "#facc15"; }
-  else if (totalStars >= 10) { rating = "🎖️ Excelente desempenho!"; emoji = "🔥"; color = "#22c55e"; }
-  else if (totalStars >= 7) { rating = "👍 Bom trabalho!"; emoji = "✅"; color = "#eab308"; }
-  else if (totalStars >= 4) { rating = "🙂 Você completou o jogo!"; emoji = "👏"; color = "#3b82f6"; }
-  else { rating = "Continue treinando! Você consegue melhorar."; emoji = "💪"; color = "#ef4444"; }
+  if (totalStars === 12) { 
+    rating = "🏆 Desempenho PERFEITO! Você é um mestre!"; 
+    emoji = "🌟"; 
+    color = "#facc15"; 
+  }
+  else if (totalStars >= 10) { 
+    rating = "🎖️ Excelente desempenho!"; 
+    emoji = "🔥"; 
+    color = "#22c55e"; 
+  }
+  else if (totalStars >= 7) { 
+    rating = "👍 Bom trabalho!"; 
+    emoji = "✅"; 
+    color = "#eab308"; 
+  }
+  else if (totalStars >= 4) { 
+    rating = "🙂 Você completou o jogo!"; 
+    emoji = "👏"; 
+    color = "#3b82f6"; 
+  }
+  else { 
+    rating = "Continue treinando! Você consegue melhorar."; 
+    emoji = "💪"; 
+    color = "#ef4444"; 
+  }
 
   let finalHTML = `
     <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.88); display:flex; align-items:center; justify-content:center; z-index:9999; font-family: system-ui, sans-serif;">
       <div style="background:#1e2937; color:white; padding:40px 35px; border-radius:20px; max-width:480px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.7);">
         <h1 style="font-size:42px; margin:0 0 8px 0;">🏆 PARABÉNS!</h1>
         <p style="font-size:20px; margin:0 0 25px 0; opacity:0.9;">Você completou todos os 4 níveis</p>
+        
         <div style="font-size:68px; font-weight:bold; margin:15px 0 8px 0; color:${color}; line-height:1;">
           ${totalStars}<span style="font-size:32px; opacity:0.6;">/${maxPossible}</span>
         </div>
         <p style="margin:0 0 20px 0; font-size:18px; color:#94a3b8;">estrelas conquistadas</p>
+        
         ${solutionPenaltyText}
+        
         <p style="font-size:23px; margin:20px 0 30px 0;">${emoji} ${rating}</p>
         
         <div style="background:#0f172a; padding:18px; border-radius:12px; margin:25px 0; text-align:left; font-size:16px;">
