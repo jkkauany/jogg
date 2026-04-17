@@ -24,7 +24,7 @@ body {
   padding: 20px;
 }
 
-/* ====================== HEADER ====================== */
+/* HEADER */
 .header {
   display: flex;
   align-items: center;
@@ -56,7 +56,7 @@ body {
   white-space: nowrap;
 }
 
-/* ====================== CONTAINER COM BOTÃO PAUSE NO CANTO SUPERIOR DIREITO ====================== */
+/* CONTAINER */
 .container { 
   display: flex; 
   gap: 25px; 
@@ -67,7 +67,7 @@ body {
   max-width: 1180px; 
   width: 100%;
   align-items: stretch;
-  position: relative;           /* ← necessário para posicionar o botão pause */
+  position: relative;
 }
 
 .btn-pause-game {
@@ -95,6 +95,25 @@ body {
   transform: scale(1.1);
 }
 
+/* CONTADOR DE CHIPS EM TEMPO REAL */
+.chip-counter {
+  font-size: 18px;
+  font-weight: 600;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  border: 2px solid #10b981;
+}
+
+.chip-counter span {
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* EDITOR */
 .editor { 
   flex: 1;
   min-width: 300px;
@@ -201,7 +220,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
 canvas { 
@@ -213,7 +231,6 @@ canvas {
   box-shadow: 0 15px 45px rgba(100,150,255,0.35); 
 }
 
-/* ====================== RESTO DO CSS (mantido igual ao anterior) ====================== */
 .progress-bar { display: flex; gap: 8px; padding: 8px 0; }
 
 .level-dot {
@@ -236,6 +253,7 @@ canvas {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #2f2f4a;
+  gap: 15px;
 }
 
 .lives { font-size: 32px; letter-spacing: 4px; }
@@ -250,8 +268,9 @@ canvas {
 .timer.low { color: #ff3b5c; animation: pulse 800ms infinite; }
 @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
+/* MODAIS */
 #modal-docs, #modal-timeout, #modal-pause {
-  display: none; position: absolute;  inset: 0;
+  display: none; position: fixed; inset: 0;
   background: rgba(20,20,34,0.9); z-index: 9999;
   justify-content: center; align-items: center;
 }
@@ -262,40 +281,32 @@ canvas {
 }
 .btn-fechar { width: 100%; padding: 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 15px; cursor: pointer; }
 
-/* ====================== PAUSE MODAL ====================== */
+/* PAUSE MODAL */
 .modal-content-pause {
   width: 100%;
   max-width: 520px;
   display: flex;
   justify-content: center;
 }
-
 .pause-box {
   background: #0f172a;
   border: 14px solid #7dd3fc;
   padding: 30px 40px;
   width: 100%;
   max-width: 460px;
-  box-shadow: 
-    0 0 0 8px #1e2a4a,
-    0 25px 60px rgba(0,0,0,0.6);
+  box-shadow: 0 0 0 8px #1e2a4a, 0 25px 60px rgba(0,0,0,0.6);
   text-align: center;
 }
-
 .pause-title {
   font-family: 'Roboto Mono', monospace;
   font-size: 58px;
   font-weight: 900;
   color: #7dd3fc;
   letter-spacing: 14px;
-  text-shadow: 
-    6px 6px 0 #000,
-    -2px -2px 0 #000;
+  text-shadow: 6px 6px 0 #000, -2px -2px 0 #000;
   margin-bottom: 40px;
 }
-
-.pause-btn-continue,
-.pause-btn-end {
+.pause-btn-continue, .pause-btn-end {
   display: block;
   width: 100%;
   padding: 22px;
@@ -307,25 +318,9 @@ canvas {
   cursor: pointer;
   transition: all 0.2s;
 }
-
-.pause-btn-continue {
-  background: #38e172;
-  color: #0f172a;
-  box-shadow: 0 10px 0 #1e3a5f;
-}
-
-.pause-btn-end {
-  background: #64748b;
-  color: white;
-  box-shadow: 0 10px 0 #1e3a5f;
-}
-
-.pause-btn-continue:active,
-.pause-btn-end:active {
-  transform: translateY(4px);
-  box-shadow: 0 4px 0 #1e3a5f;
-}
-
+.pause-btn-continue { background: #38e172; color: #0f172a; box-shadow: 0 10px 0 #1e3a5f; }
+.pause-btn-end { background: #64748b; color: white; box-shadow: 0 10px 0 #1e3a5f; }
+.pause-btn-continue:active, .pause-btn-end:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e3a5f; }
 .pause-footer {
   margin-top: 30px;
   font-family: 'Roboto Mono', monospace;
@@ -334,7 +329,7 @@ canvas {
   letter-spacing: 3px;
 }
 
-/* ====================== RESTO DO CSS (transição, menu, etc.) ====================== */
+/* TRANSITION, MENU E OUTROS (mantidos iguais ao seu original) */
 .transition-screen {
   display: none;
   position: fixed;
@@ -624,19 +619,4 @@ canvas {
 
 .level-card .stars {
   font-size: 26px;
-}
-
-.level-dot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 1;
-}
-.level-dot .stars {
-  font-size: 16px;
-  letter-spacing: 1px;
 }

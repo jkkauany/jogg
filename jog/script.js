@@ -558,6 +558,7 @@ async function moveTo(newGridX, newGridY) {
     statusEl.innerHTML = `✅ Chipe coletado! (${totalCollected}/${chips.length})`;
   }
 
+  updateChipCounter(); // ← ATUALIZA CONTADOR
   checkVictory();
 }
 
@@ -774,7 +775,6 @@ function computeAutomaticSolution() {
   return grouped.join('\n');
 }
 
-// ==================== BOTÃO SOLUÇÃO AUTOMÁTICO ====================
 function mostrarSolucao() {
   const codeArea = document.getElementById('code');
   const currentCode = codeArea.innerText.trim();
@@ -1022,6 +1022,15 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   updateLivesUI();
   applyLevelTheme();
   draw();
+  updateChipCounter(); // ← CONTADOR AO CARREGAR NÍVEL
+}
+
+// ==================== CONTADOR DE CHIPS EM TEMPO REAL ==================== //
+function updateChipCounter() {
+  const collected = chips.filter(c => c.collected).length;
+  const total = chips.length;
+  document.getElementById('chips-collected').textContent = collected;
+  document.getElementById('total-chips').textContent = total;
 }
 
 // ==================== PAUSE SYSTEM ==================== //
@@ -1047,7 +1056,6 @@ function endGameFromPause() {
   voltarAoMenuDoJogo();
 }
 
-// Timer helpers
 function pauseTimer() {
   if (timerInterval) {
     clearInterval(timerInterval);

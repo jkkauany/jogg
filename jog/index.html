@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- HEADER (sem o botão pause) -->
+  <!-- HEADER -->
   <div class="header">
     <div class="logo">
       🤖 <span>Robô Codificador</span>
@@ -22,7 +22,7 @@
 
   <div class="container">
     
-    <!-- BOTÃO PAUSE NO CANTO SUPERIOR DIREITO DA TELA DE JOGO -->
+    <!-- BOTÃO PAUSE -->
     <button onclick="showPause()" id="btn-pause" class="btn-pause-game">
       ⏸️
     </button>
@@ -35,6 +35,11 @@
       <div class="hud">
         <div id="lives" class="lives">❤️❤️❤️</div>
         <div id="timer" class="timer">⏱️ <span id="time-left">60</span>s</div>
+        
+        <!-- CONTADOR DE CHIPS EM TEMPO REAL -->
+        <div id="chip-counter" class="chip-counter">
+          💾 <span id="chips-collected">0</span>/<span id="total-chips">4</span>
+        </div>
       </div>
       <pre class="code-area" id="code" contenteditable="true" spellcheck="false"></pre>
       <div class="controls">
@@ -84,20 +89,13 @@
     </div>
   </div>
 
-  <!-- MODAL PAUSE (igual ao exemplo das imagens) -->
+  <!-- MODAL PAUSE -->
   <div id="modal-pause">
     <div class="modal-content-pause">
       <div class="pause-box">
         <div class="pause-title">PAUSE</div>
-        
-        <button onclick="resumeGame()" class="pause-btn-continue">
-          CONTINUE ▶
-        </button>
-        
-        <button onclick="endGameFromPause()" class="pause-btn-end">
-          END GAME
-        </button>
-        
+        <button onclick="resumeGame()" class="pause-btn-continue">CONTINUE ▶</button>
+        <button onclick="endGameFromPause()" class="pause-btn-end">END GAME</button>
         <div class="pause-footer">PRESS SPACE TO CONTINUE</div>
       </div>
     </div>
