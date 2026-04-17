@@ -8,24 +8,24 @@
 </head>
 <body>
 
+  <div class="game-wrapper">
   <!-- HEADER -->
   <div class="header">
     <div class="logo">
       🤖 <span>Robô Codificador</span>
     </div>
-    <div class="progress-bar" id="progress-bar"></div>
-    
+    <div class="header-center">
+      <div class="progress-bar" id="progress-bar"></div>
+      <button onclick="showPause()" id="btn-pause" class="btn-pause-game">
+        ⏸️
+      </button>
+    </div>
     <button onclick="resetProgress()" class="btn-reset-progress">
       🗑️ Resetar Progresso
     </button>
   </div>
 
   <div class="container">
-    
-    <!-- BOTÃO PAUSE -->
-    <button onclick="showPause()" id="btn-pause" class="btn-pause-game">
-      ⏸️
-    </button>
 
     <div class="editor">
       <div class="editor-header">
@@ -57,6 +57,8 @@
       <canvas id="canvas" width="560" height="560"></canvas>
     </div>
   </div>
+
+  </div><!-- end .game-wrapper -->
 
   <!-- MODAL DOCS -->
   <div id="modal-docs">

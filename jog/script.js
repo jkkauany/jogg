@@ -85,8 +85,9 @@ function updateProgressBar() {
   for (let i = 1; i <= 4; i++) {
     const dot = document.createElement('div');
     dot.className = `level-dot ${completedLevels.includes(i) ? 'completed' : ''}`;
-    const stars = levelStars[i] ? '⭐'.repeat(levelStars[i]) : '';
-    dot.innerHTML = `${i}<span class="stars">${stars}</span>`;
+    const starCount = levelStars[i] || 0;
+    const starsHtml = starCount > 0 ? '⭐'.repeat(starCount) : (completedLevels.includes(i) ? '' : '');
+    dot.innerHTML = `<span class="dot-num">${i}</span><span class="dot-stars">${starsHtml}</span>`;
     bar.appendChild(dot);
   }
 }
@@ -822,27 +823,67 @@ function checkVictory() {
     else if (totalTimeSpent < threshold2) earnedStars = 2;
 
     saveProgress(levelNum, earnedStars);
-
-    const statusEl = document.getElementById('status');
-    statusEl.classList.add('success');
-    statusEl.innerHTML = `
-      🎉 Nível ${levelNum} concluído!<br>
-      <span style="font-size:28px">${'⭐'.repeat(earnedStars)}</span><br>
-      <small>Tempo: ${totalTimeSpent}s ${penaltyTime > 0 ? `(+${penaltyTime}s penalidade)` : ''}</small>
-    `;
-
-    const btn = document.getElementById('btn-proximo');
-    if (currentLevelIndex === levels.length - 1) {
-      btn.style.display = 'none';
-      setTimeout(() => mostrarTelaFinal(), 800);
-    } else {
-      btn.style.display = 'flex';
-    }
-
     shouldStopExecution = true;
+
+    // Bloqueia a tela e exibe overlay de vitória após pequena pausa
+    setTimeout(() => mostrarOverlayVitoria(levelNum, earnedStars, totalTimeSpent), 600);
+
     return true;
   }
   return false;
+}
+
+function mostrarOverlayVitoria(levelNum, earnedStars, totalTimeSpent) {
+  // Remove overlay anterior se existir
+  const old = document.getElementById('victory-overlay');
+  if (old) old.remove();
+
+  const isLast = currentLevelIndex === levels.length - 1;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'victory-overlay';
+  overlay.innerHTML = `
+    <div class="victory-box">
+      <div class="victory-robot">🤖</div>
+      <div class="victory-title">Nível ${levelNum} Concluído!</div>
+      <div class="victory-stars">${'⭐'.repeat(earnedStars)}${'☆'.repeat(3 - earnedStars)}</div>
+      <div class="victory-time">⏱️ Tempo: ${totalTimeSpent}s${penaltyTime > 0 ? ` <span class="penalty">(+${penaltyTime}s penalidade)</span>` : ''}</div>
+      ${isLast
+        ? `<button class="victory-btn victory-btn-final" onclick="fecharOverlayVitoriaFinal()">🏆 Ver Resultado Final</button>`
+        : `<button class="victory-btn victory-btn-next" onclick="fecharOverlayEAvancar()">Próxima Fase ▶</button>`
+      }
+      <button class="victory-btn victory-btn-menu" onclick="fecharOverlayEMenu()">🏠 Menu Principal</button>
+    </div>
+  `;
+
+  // Bloqueia teclado e cliques no jogo
+  document.getElementById('btn-exec').disabled = true;
+  document.getElementById('btn-proximo').style.display = 'none';
+  const codeArea = document.getElementById('code');
+  codeArea.contentEditable = 'false';
+  codeArea.style.opacity = '0.4';
+  codeArea.style.cursor = 'not-allowed';
+
+  document.body.appendChild(overlay);
+}
+
+function fecharOverlayEAvancar() {
+  const overlay = document.getElementById('victory-overlay');
+  if (overlay) overlay.remove();
+  const nextIndex = currentLevelIndex + 1;
+  showLevelTransition(nextIndex);
+}
+
+function fecharOverlayVitoriaFinal() {
+  const overlay = document.getElementById('victory-overlay');
+  if (overlay) overlay.remove();
+  mostrarTelaFinal();
+}
+
+function fecharOverlayEMenu() {
+  const overlay = document.getElementById('victory-overlay');
+  if (overlay) overlay.remove();
+  voltarAoMenuDoJogo();
 }
 
 function mostrarTelaFinal() {
