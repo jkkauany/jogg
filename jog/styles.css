@@ -338,7 +338,7 @@ canvas {
 @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 
 /* MODAIS */
-#modal-docs, #modal-timeout, #modal-pause {
+#modal-docs, #modal-timeout, #modal-pause, #modal-reset-nivel {
   display: none; position: fixed; inset: 0;
   background: rgba(20,20,34,0.9); z-index: 9999;
   justify-content: center; align-items: center;
@@ -349,6 +349,68 @@ canvas {
   box-shadow: 0 25px 60px rgba(0,0,0,0.35);
 }
 .btn-fechar { width: 100%; padding: 12px; background: var(--primary); color: white; border-radius: 10px; font-size: 15px; cursor: pointer; }
+
+/* MODAL RESET NÍVEL */
+.modal-reset-content {
+  text-align: center;
+  padding: 36px 32px 28px;
+  max-width: 420px;
+}
+.modal-reset-icon {
+  font-size: 52px;
+  margin-bottom: 10px;
+  animation: resetSpin 0.6s ease;
+}
+@keyframes resetSpin {
+  from { transform: rotate(-180deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+.modal-reset-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+.modal-reset-desc {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.modal-reset-buttons {
+  display: flex;
+  gap: 12px;
+}
+.btn-reset-confirm {
+  flex: 1;
+  padding: 14px;
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+  font-family: 'Roboto Mono', monospace;
+}
+.btn-reset-confirm:hover { background: #16a34a; transform: translateY(-2px); }
+.btn-reset-confirm:active { transform: translateY(1px); }
+.btn-reset-cancel {
+  flex: 1;
+  padding: 14px;
+  background: #64748b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+  font-family: 'Roboto Mono', monospace;
+}
+.btn-reset-cancel:hover { background: #475569; transform: translateY(-2px); }
+.btn-reset-cancel:active { transform: translateY(1px); }
 
 /* PAUSE MODAL */
 .modal-content-pause {

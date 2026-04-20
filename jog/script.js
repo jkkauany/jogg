@@ -622,7 +622,7 @@ function applyLevelTheme() {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function moveTo(newGridX, newGridY) {
-  if (timeExpired || isPaused) return;
+  if (timeExpired || isPaused || shouldStopExecution) return;
 
   const startX = robotPixel.x;
   const startY = robotPixel.y;
@@ -631,6 +631,7 @@ async function moveTo(newGridX, newGridY) {
   const steps = 24;
 
   for (let i = 1; i <= steps; i++) {
+    if (shouldStopExecution) return;
     let p = i / steps;
     p = 1 - Math.pow(1 - p, 3);
     robotPixel.x = startX + (targetX - startX) * p;
@@ -638,6 +639,7 @@ async function moveTo(newGridX, newGridY) {
     draw();
     await sleep(13);
   }
+  if (shouldStopExecution) return;
 
   robot.gridX = newGridX;
   robot.gridY = newGridY;
@@ -768,24 +770,28 @@ async function executarCodigo() {
 // ==================== COMANDOS ==================== //
 async function moverDireita(quantidade = 1) {
   for (let i = 0; i < quantidade; i++) {
+    if (shouldStopExecution) return;
     if (robot.gridX >= COLS - 1) break;
     await moveTo(robot.gridX + 1, robot.gridY);
   }
 }
 async function moverEsquerda(quantidade = 1) {
   for (let i = 0; i < quantidade; i++) {
+    if (shouldStopExecution) return;
     if (robot.gridX <= 0) break;
     await moveTo(robot.gridX - 1, robot.gridY);
   }
 }
 async function moverCima(quantidade = 1) {
   for (let i = 0; i < quantidade; i++) {
+    if (shouldStopExecution) return;
     if (robot.gridY <= 0) break;
     await moveTo(robot.gridX, robot.gridY - 1);
   }
 }
 async function moverBaixo(quantidade = 1) {
   for (let i = 0; i < quantidade; i++) {
+    if (shouldStopExecution) return;
     if (robot.gridY >= ROWS - 1) break;
     await moveTo(robot.gridX, robot.gridY + 1);
   }
@@ -1152,6 +1158,10 @@ function proximoNivel() {
 
 // ==================== LOAD LEVEL ==================== //
 function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
+  // Para qualquer execução em andamento imediatamente
+  shouldStopExecution = true;
+  isRunning = false;
+
   currentLevelIndex = index;
 
   // === CORREÇÃO: define o tempo correto ANTES de mostrar a tela "Iniciar" ===
@@ -1336,9 +1346,16 @@ function startGame() {
 }
 
 function resetNivel() {
-  if (confirm('🔄 Tem certeza que deseja reiniciar o nível?\n\nO código atual será apagado.')) {
-    loadLevel(currentLevelIndex, true);
-  }
+  document.getElementById('modal-reset-nivel').style.display = 'flex';
+}
+
+function confirmarResetNivel() {
+  document.getElementById('modal-reset-nivel').style.display = 'none';
+  loadLevel(currentLevelIndex, true);
+}
+
+function cancelarResetNivel() {
+  document.getElementById('modal-reset-nivel').style.display = 'none';
 }
 
 function mostrarDica() {
