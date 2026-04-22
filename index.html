@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤖 Robô Codificador PRO</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <style>
+    .btn-creditos {
+      background: linear-gradient(135deg, #7c83ff, #a855f7);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+      margin-left: 12px;
+    }
+
+    .btn-creditos:hover {
+      opacity: 0.85;
+      transform: scale(0.97);
+    }
+  </style>
+
+  <div class="game-wrapper">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo">
+        🤖 <span>Robô Codificador</span>
+      </div>
+      <div class="header-center">
+        <div class="progress-bar" id="progress-bar"></div>
+        <button onclick="showPause()" id="btn-pause" class="btn-pause-game">
+          ⏸️
+        </button>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button onclick="resetProgress()" class="btn-reset-progress">
+          🗑️ Resetar Progresso
+        </button>
+        <button onclick="mostrarCreditos()" class="btn-creditos">
+          🎓 Créditos
+        </button>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="editor">
+        <div class="editor-header">
+          <span id="level-title">Nível 1 — Colete os 4 chipes!</span>
+          <span style="color:#ffd93d; cursor:pointer;" onclick="mostrarDica()">💡 Dica</span>
+        </div>
+        <div class="hud">
+          <div id="lives" class="lives">❤️❤️❤️</div>
+          <div id="timer" class="timer">⏱️ <span id="time-left">60</span>s</div>
+
+          <!-- CONTADOR DE CHIPS EM TEMPO REAL -->
+          <div id="chip-counter" class="chip-counter">
+            💾 <span id="chips-collected">0</span>/<span id="total-chips">4</span>
+          </div>
+        </div>
+        <pre class="code-area" id="code" contenteditable="true" spellcheck="false"></pre>
+        <div class="controls">
+          <button onclick="startGame()" id="btn-start" class="btn-start">▶️ INICIAR JOGO</button>
+          <button onclick="executarCodigo()" id="btn-exec" class="btn-exec">▶️ Executar</button>
+          <button onclick="mostrarSolucao()" id="btn-solucao" class="btn-solucao">❓Solução</button>
+          <button onclick="mostrarDocs()" class="btn-docs">📖 Tutorial</button>
+          <button onclick="resetNivel()" class="btn-reset">🔄 Reset</button>
+          <button onclick="proximoNivel()" id="btn-proximo" class="btn-proximo" style="display:none;">Próximo Nível
+            ▶</button>
+        </div>
+        <div id="status" class="status"></div>
+      </div>
+
+      <div class="grid-container">
+        <canvas id="canvas" width="560" height="560"></canvas>
+      </div>
+    </div>
+
+  </div><!-- end .game-wrapper -->
+
+  <!-- MODAL DOCS -->
+  <div id="modal-docs">
+    <div class="modal-content">
+      <h2>📖 Comandos Disponíveis</h2>
+      <ul>
+        <li><strong>moverEsquerda()</strong> — Move o robô 1 casa para a esquerda</li>
+        <li><strong>moverDireita()</strong> — Move o robô 1 casa para a direita</li>
+        <li><strong>moverCima()</strong> — Move o robô 1 casa para cima</li>
+        <li><strong>moverBaixo()</strong> — Move o robô 1 casa para baixo</li>
+      </ul>
+      <p style="font-size:14px; color:#64748b; margin-bottom:24px;">
+        Use <strong>moverDireita(5)</strong> para mover várias casas.<br>
+        Escreva um comando por linha.
+      </p>
+      <button onclick="fecharModal()" class="btn-fechar">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL TEMPO ESGOTADO -->
+  <div id="modal-timeout">
+    <div class="modal-content">
+      <h2>⏰ Seu tempo acabou!</h2>
+      <p style="font-size:18px; margin:20px 0 10px 0;">Você perdeu uma vida.</p>
+      <p style="margin-bottom:30px; font-size:17px;">Gostaria de jogar novamente este nível?</p>
+      <div style="display:flex; gap:15px;">
+        <button onclick="reiniciarNivelDoTimeout()"
+          style="flex:1; background:#38e172; color:white; padding:14px; border-radius:10px; font-weight:700; cursor:pointer;">Sim,
+          jogar novamente</button>
+        <button onclick="fecharModalTimeout()"
+          style="flex:1; background:#64748b; color:white; padding:14px; border-radius:10px; font-weight:700; cursor:pointer;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMAR RESET DO NÍVEL -->
+  <div id="modal-reset-nivel">
+    <div class="modal-content modal-reset-content">
+      <div class="modal-reset-icon">🔄</div>
+      <h2 class="modal-reset-title">Reiniciar Nível?</h2>
+      <p class="modal-reset-desc">O código atual será apagado e o robô voltará ao início.<br>Tem certeza?</p>
+      <div class="modal-reset-buttons">
+        <button onclick="confirmarResetNivel()" class="btn-reset-confirm">✅ Sim, reiniciar</button>
+        <button onclick="cancelarResetNivel()" class="btn-reset-cancel">❌ Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PAUSE -->
+  <div id="modal-pause">
+    <div class="modal-content-pause">
+      <div class="pause-box">
+        <div class="pause-title">PAUSE</div>
+        <button onclick="resumeGame()" class="pause-btn-continue">CONTINUE ▶</button>
+        <button onclick="endGameFromPause()" class="pause-btn-end">END GAME</button>
+        <div class="pause-footer">PRESS SPACE TO CONTINUE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVEL TRANSITION SCREEN -->
+  <div id="level-transition-screen" class="transition-screen">
+    <div class="transition-content">
+      <div class="transition-robot">🤖</div>
+      <h2>Nível <span id="current-level-num">1</span> Concluído!</h2>
+      <div id="transition-stars" class="stars-big"></div>
+      <p class="transition-subtitle">Preparando próximo desafio...</p>
+      <p id="transition-next">Nível <span id="next-level-num">2</span></p>
+      <div class="loading-container">
+        <div class="loading-bar">
+          <div class="loading-progress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA DE MENU PRINCIPAL -->
+  <div id="main-menu-screen" class="menu-screen">
+    <div class="menu-content">
+      <div class="menu-header">🤖 <span>Robô Codificador</span><span style="font-size:28px; margin-left:8px;">PRO</span>
+      </div>
+      <h1 class="menu-title">Bem-vindo, Programador!</h1>
+      <p class="menu-subtitle">Colete os chips e domine a arte da programação</p>
+      <div class="total-stars"><span id="menu-total-stars">0</span> ⭐ <small>de 12 estrelas</small></div>
+      <div class="menu-buttons">
+        <button onclick="startGameFromMenu()" class="btn-menu-primary">▶️ INICIAR JOGO</button>
+        <button onclick="showLevelSelector()" class="btn-menu-secondary">📋 Selecionar Nível</button>
+        <button onclick="mostrarDocs()" class="btn-menu-secondary">📖 Como Jogar</button>
+        <button onclick="resetProgressFromMenu()" class="btn-menu-warning">🗑️ Resetar Progresso</button>
+          <button onclick="mostrarCreditos()" class="btn-menu">
+      🎓 Créditos
+    </button>
+      </div>
+      <div class="menu-footer"><small>Feito com ❤️ para quem quer aprender codificando</small></div>
+    </div>
+  </div>
+
+  <!-- SELETOR DE NÍVEIS -->
+  <div id="level-selector-modal" class="modal-levels">
+    <div class="modal-content-levels">
+      <h2>Escolha o Nível</h2>
+      <div id="levels-grid" class="levels-grid"></div>
+      <button onclick="closeLevelSelector()" class="btn-fechar">Fechar</button>
+    </div>
+  </div>
+
+  <script src="script.js">
+       // ==================== CRÉDITOS ====================
+    
+  </script>
+</body>
+
+</html>
