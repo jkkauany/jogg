@@ -27,6 +27,7 @@ let penaltyTime = 0;
 let levelStartTime = 0;
 let livesLostThisLevel = 0;
 let collectedChipsMemory = []; // chips coletados que persistem ao perder vida
+let collectedTimeBonusMemory = []; // chips de tempo coletados — só resetam no game over
 
 let completedLevels = [];
 let levelStars = {};
@@ -1176,6 +1177,7 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   if (showStartButton) {
     lives = 3;
     collectedChipsMemory = [];
+    collectedTimeBonusMemory = [];
     updateLivesUI();
   }
 
@@ -1193,6 +1195,12 @@ function loadLevel(index, showStartButton = true, keepTimerRunning = false) {
   corruptedChips = level.corruptedChips ? level.corruptedChips.map(c => ({...c})) : [];
   traps = level.traps ? [...level.traps] : [];
   timeBonusChips = level.timeBonusChips ? level.timeBonusChips.map(c => ({...c, collected: false})) : [];
+
+  if (collectedTimeBonusMemory.length > 0) {
+    collectedTimeBonusMemory.forEach(i => {
+      if (timeBonusChips[i]) timeBonusChips[i].collected = true;
+    });
+  }
 
   document.getElementById('level-title').innerText = level.title;
   document.getElementById('status').innerHTML = '';
@@ -1306,6 +1314,7 @@ function loseLife(msg = "Você perdeu uma vida!") {
       alert("💀 GAME OVER\n\nVocê perdeu todas as 3 vidas!\n\nVoltando para o nível atual com vidas novas.");
       lives = 3;
       collectedChipsMemory = [];
+      collectedTimeBonusMemory = [];
       robotDeathAnim = null;
       particles = [];
       floatingTexts = [];
@@ -1314,6 +1323,10 @@ function loseLife(msg = "Você perdeu uma vida!") {
     }, 900);
   } else {
     collectedChipsMemory = chips
+      .map((c, i) => c.collected ? i : -1)
+      .filter(i => i !== -1);
+
+    collectedTimeBonusMemory = timeBonusChips
       .map((c, i) => c.collected ? i : -1)
       .filter(i => i !== -1);
 
@@ -1403,12 +1416,17 @@ function handleTimeOut() {
     alert("💀 GAME OVER\n\nVocê perdeu todas as 3 vidas!\n\nVoltando para o nível atual com vidas novas.");
     lives = 3;
     collectedChipsMemory = [];
+    collectedTimeBonusMemory = [];
     updateLivesUI();
     loadLevel(currentLevelIndex, true);
     return;
   }
 
   collectedChipsMemory = chips
+    .map((c, i) => c.collected ? i : -1)
+    .filter(i => i !== -1);
+
+  collectedTimeBonusMemory = timeBonusChips
     .map((c, i) => c.collected ? i : -1)
     .filter(i => i !== -1);
 
